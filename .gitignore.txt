@@ -1,0 +1,17 @@
+# ===== .NET / Visual Studio =====
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/*.suo
+**/*.cache
+**/*.log
+
+# ===== Node / Front build =====
+**/node_modules/
+**/dist/
+**/build/
+
+# ===== Secrets (ajustá si usás otro nombre) =====
+**/appsettings.Production.json
+**/appsettings.*.local.json
