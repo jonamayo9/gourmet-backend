@@ -1,0 +1,138 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Jonathan Ezequiel\\Desktop\\Jony\\Proyectos\\Menu Online\\gourmet-backend\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2FFDAE36-3BD1-855A-AE85-0865B2E660FB}|GourmetApi\\GourmetApi.csproj|c:\\users\\jonathan ezequiel\\desktop\\jony\\proyectos\\menu online\\gourmet-backend\\gourmetapi\\data\\dbseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FFDAE36-3BD1-855A-AE85-0865B2E660FB}|GourmetApi\\GourmetApi.csproj|solutionrelative:gourmetapi\\data\\dbseeder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2FFDAE36-3BD1-855A-AE85-0865B2E660FB}|GourmetApi\\GourmetApi.csproj|c:\\users\\jonathan ezequiel\\desktop\\jony\\proyectos\\menu online\\gourmet-backend\\gourmetapi\\migrations\\20260305021757_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2FFDAE36-3BD1-855A-AE85-0865B2E660FB}|GourmetApi\\GourmetApi.csproj|solutionrelative:gourmetapi\\migrations\\20260305021757_initialcreate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DbSeeder.cs",
+              "DocumentMoniker": "C:\\Users\\Jonathan Ezequiel\\Desktop\\Jony\\Proyectos\\Menu Online\\gourmet-backend\\GourmetApi\\Data\\DbSeeder.cs",
+              "RelativeDocumentMoniker": "GourmetApi\\Data\\DbSeeder.cs",
+              "ToolTip": "C:\\Users\\Jonathan Ezequiel\\Desktop\\Jony\\Proyectos\\Menu Online\\gourmet-backend\\GourmetApi\\Data\\DbSeeder.cs",
+              "RelativeToolTip": "GourmetApi\\Data\\DbSeeder.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-05T03:06:50.287Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "20260305021757_InitialCreate.cs",
+              "DocumentMoniker": "C:\\Users\\Jonathan Ezequiel\\Desktop\\Jony\\Proyectos\\Menu Online\\gourmet-backend\\GourmetApi\\Migrations\\20260305021757_InitialCreate.cs",
+              "RelativeDocumentMoniker": "GourmetApi\\Migrations\\20260305021757_InitialCreate.cs",
+              "ToolTip": "C:\\Users\\Jonathan Ezequiel\\Desktop\\Jony\\Proyectos\\Menu Online\\gourmet-backend\\GourmetApi\\Migrations\\20260305021757_InitialCreate.cs",
+              "RelativeToolTip": "GourmetApi\\Migrations\\20260305021757_InitialCreate.cs",
+              "ViewState": "AgIAALAAAAAAAAAAAAAWwMsAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-05T02:32:20.592Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{13b12e3e-c1b4-4539-9371-4fe9a0d523fc}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:137:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:138:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:139:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

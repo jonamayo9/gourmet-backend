@@ -13,6 +13,7 @@ public static class DbSeeder
         var email = (cfg["Seed:SuperAdminEmail"] ?? "").Trim().ToLowerInvariant();
         var pass = (cfg["Seed:SuperAdminPassword"] ?? "").Trim();
 
+        // Si no configuraste variables, no seedea (pero NO rompe el arranque)
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pass))
             return;
 
