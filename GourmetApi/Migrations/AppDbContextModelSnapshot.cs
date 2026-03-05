@@ -57,7 +57,8 @@ namespace GourmetApi.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.HasIndex("Email");
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("AdminUsers");
                 });

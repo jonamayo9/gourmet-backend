@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GourmetApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260227190321_AddShifts")]
-    partial class AddShifts
+    [Migration("20260305021757_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,47 @@ namespace GourmetApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("GourmetApi.Entities.AdminUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("AdminUsers");
+                });
 
             modelBuilder.Entity("GourmetApi.Entities.Category", b =>
                 {
@@ -65,11 +106,15 @@ namespace GourmetApi.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Alias")
-                        .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("LogoUrl")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -81,7 +126,6 @@ namespace GourmetApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Whatsapp")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -115,6 +159,9 @@ namespace GourmetApi.Migrations
 
                     b.Property<bool>("Enabled")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -246,6 +293,36 @@ namespace GourmetApi.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Shifts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CloseHour = 15,
+                            CompanyId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Enabled = true,
+                            OpenHour = 11
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CloseHour = 23,
+                            CompanyId = 1,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Enabled = true,
+                            OpenHour = 19
+                        });
+                });
+
+            modelBuilder.Entity("GourmetApi.Entities.AdminUser", b =>
+                {
+                    b.HasOne("GourmetApi.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("GourmetApi.Entities.Category", b =>
@@ -268,7 +345,7 @@ namespace GourmetApi.Migrations
                         .IsRequired();
 
                     b.HasOne("GourmetApi.Entities.Company", "Company")
-                        .WithMany()
+                        .WithMany("Items")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -281,7 +358,7 @@ namespace GourmetApi.Migrations
             modelBuilder.Entity("GourmetApi.Entities.Order", b =>
                 {
                     b.HasOne("GourmetApi.Entities.Company", "Company")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -303,7 +380,7 @@ namespace GourmetApi.Migrations
             modelBuilder.Entity("GourmetApi.Entities.Shift", b =>
                 {
                     b.HasOne("GourmetApi.Entities.Company", "Company")
-                        .WithMany()
+                        .WithMany("Shifts")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -319,6 +396,12 @@ namespace GourmetApi.Migrations
             modelBuilder.Entity("GourmetApi.Entities.Company", b =>
                 {
                     b.Navigation("Categories");
+
+                    b.Navigation("Items");
+
+                    b.Navigation("Orders");
+
+                    b.Navigation("Shifts");
                 });
 
             modelBuilder.Entity("GourmetApi.Entities.Order", b =>

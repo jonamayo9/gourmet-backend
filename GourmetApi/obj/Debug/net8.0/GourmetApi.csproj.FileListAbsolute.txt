@@ -232,7 +232,6 @@ C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\Go
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\GourmetApi.csproj.Up2Date
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\GourmetApi.dll
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\refint\GourmetApi.dll
