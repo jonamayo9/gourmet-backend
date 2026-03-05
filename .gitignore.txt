@@ -1,6 +1,5 @@
 # ===== .NET / Visual Studio =====
 **/bin/
-**/obj/
 **/.vs/
 **/*.user
 **/*.suo
@@ -15,3 +14,19 @@
 # ===== Secrets (ajustá si usás otro nombre) =====
 **/appsettings.Production.json
 **/appsettings.*.local.json
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build outputs
+bin/
+obj/
+
+# Logs
+*.log
+
+# Rider/VS Code
+.idea/
+.vscode/
