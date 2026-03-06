@@ -97,11 +97,8 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAsync(db, cfg);
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
