@@ -238,3 +238,4 @@ C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\Go
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\GourmetApi.pdb
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\GourmetApi.genruntimeconfig.cache
 C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\ref\GourmetApi.dll
+C:\Users\Jonathan Ezequiel\Desktop\Jony\Proyectos\Menu Online\gourmet-backend\GourmetApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

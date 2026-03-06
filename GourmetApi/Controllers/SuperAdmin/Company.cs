@@ -1,6 +1,7 @@
 ﻿using GourmetApi.Data;
 using GourmetApi.Dtos.SuperAdmin;
 using GourmetApi.Entities;
+using GourmetApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +11,16 @@ namespace GourmetApi.Controllers.SuperAdmin
     [ApiController]
     [Route("api/superadmin/companies")]
     [Authorize(Roles = "SuperAdmin")]
-
     public class CompaniesController : ControllerBase
     {
         private readonly AppDbContext _db;
-        public CompaniesController(AppDbContext db) => _db = db;
+        private readonly CloudinaryService _cloudinary;
 
+        public CompaniesController(AppDbContext db, CloudinaryService cloudinary)
+        {
+            _db = db;
+            _cloudinary = cloudinary;
+        }
 
         [HttpGet]
         public async Task<ActionResult<List<CompanyDto>>> GetAll()
@@ -115,6 +120,34 @@ namespace GourmetApi.Controllers.SuperAdmin
             return NoContent();
         }
 
+        // =========================
+        // ✅ UPLOAD LOGO (multipart/form-data)
+        // POST: /api/superadmin/companies/{id}/logo
+        // =========================
+        [HttpPost("{id:int}/logo")]
+        [Consumes("multipart/form-data")]
+        [RequestSizeLimit(10_000_000)]
+        public async Task<IActionResult> UploadLogo(int id, [FromForm] UploadLogoForm form)
+        {
+            var c = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
+            if (c == null) return NotFound("Company not found");
+
+            var file = form.File;
+            if (file == null || file.Length == 0) return BadRequest("Archivo requerido");
+            if (!file.ContentType.StartsWith("image/")) return BadRequest("Debe ser imagen");
+
+            // folder por empresa (ordenado y multi-tenant friendly)
+            var folder = $"menuonline/companies/{c.Slug}/logo";
+
+            // sube a Cloudinary y te devuelve URL https final
+            var url = await _cloudinary.UploadImageAsync(file, folder);
+
+            c.LogoUrl = url;
+            await _db.SaveChangesAsync();
+
+            return Ok(new { url });
+        }
+
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -125,5 +158,10 @@ namespace GourmetApi.Controllers.SuperAdmin
             await _db.SaveChangesAsync();
             return NoContent();
         }
+    }
+
+    public class UploadLogoForm
+    {
+        public IFormFile File { get; set; } = default!;
     }
 }

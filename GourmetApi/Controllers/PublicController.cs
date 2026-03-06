@@ -57,7 +57,7 @@ public class PublicController : ControllerBase
                 categoria = x.c.Name,
                 nombre = x.i.Name,
                 precio = x.i.Price,
-
+                descripcion = x.i.Description,
                 // ✅ imagen real del item (fallback al logo si no tiene)
                 img = string.IsNullOrWhiteSpace(x.i.ImageUrl) ? company.LogoUrl : x.i.ImageUrl
             })

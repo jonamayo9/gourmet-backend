@@ -1,4 +1,5 @@
 ﻿using GourmetApi.Data;
+using GourmetApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -85,7 +86,7 @@ builder.Services
   });
 
 builder.Services.AddAuthorization();
-
+builder.Services.AddSingleton<CloudinaryService>();
 var app = builder.Build();
 
 // (crea datos si no existen)

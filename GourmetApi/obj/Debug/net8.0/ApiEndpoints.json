@@ -612,6 +612,27 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "GourmetApi.Controllers.SuperAdmin.CompaniesController",
+    "Method": "UploadLogo",
+    "RelativePath": "api/superadmin/companies/{id}/logo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "File",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "GourmetApi.Controllers.SuperAdmin.UploadsController",
     "Method": "UploadImage",
     "RelativePath": "api/superadmin/uploads/image",
