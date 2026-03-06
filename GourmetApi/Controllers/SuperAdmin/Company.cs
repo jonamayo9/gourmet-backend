@@ -120,15 +120,14 @@ namespace GourmetApi.Controllers.SuperAdmin
             return NoContent();
         }
 
-        // =========================
-        // ✅ UPLOAD LOGO (multipart/form-data)
-        // POST: /api/superadmin/companies/{id}/logo
-        // =========================
         [HttpPost("{id:int}/logo")]
         [Consumes("multipart/form-data")]
         [RequestSizeLimit(10_000_000)]
         public async Task<IActionResult> UploadLogo(int id, [FromForm] UploadLogoForm form)
         {
+            if (_cloudinary == null)
+                return StatusCode(500, "Cloudinary no configurado");
+
             var c = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
             if (c == null) return NotFound("Company not found");
 
@@ -136,10 +135,8 @@ namespace GourmetApi.Controllers.SuperAdmin
             if (file == null || file.Length == 0) return BadRequest("Archivo requerido");
             if (!file.ContentType.StartsWith("image/")) return BadRequest("Debe ser imagen");
 
-            // folder por empresa (ordenado y multi-tenant friendly)
             var folder = $"menuonline/companies/{c.Slug}/logo";
 
-            // sube a Cloudinary y te devuelve URL https final
             var url = await _cloudinary.UploadImageAsync(file, folder);
 
             c.LogoUrl = url;

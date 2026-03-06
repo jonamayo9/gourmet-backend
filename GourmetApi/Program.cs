@@ -86,7 +86,12 @@ builder.Services
   });
 
 builder.Services.AddAuthorization();
-builder.Services.AddSingleton<CloudinaryService>();
+var cloudName = builder.Configuration["Cloudinary:CloudName"];
+
+if (!string.IsNullOrEmpty(cloudName))
+{
+    builder.Services.AddSingleton<CloudinaryService>();
+}
 var app = builder.Build();
 
 // (crea datos si no existen)
