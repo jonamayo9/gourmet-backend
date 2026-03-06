@@ -14,15 +14,16 @@ namespace GourmetApi.Controllers.SuperAdmin
     public class CompaniesController : ControllerBase
     {
         private readonly AppDbContext _db;
-        private readonly CloudinaryService? _cloudinary;
+        private readonly IServiceProvider _serviceProvider;
 
-        public CompaniesController(AppDbContext db)
+        public CompaniesController(AppDbContext db, IServiceProvider serviceProvider)
         {
             _db = db;
+            _serviceProvider = serviceProvider;
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetAll()
+        public async Task<ActionResult<List<CompanyDto>>> GetAll()
         {
             try
             {
@@ -131,7 +132,8 @@ namespace GourmetApi.Controllers.SuperAdmin
         [RequestSizeLimit(10_000_000)]
         public async Task<IActionResult> UploadLogo(int id, [FromForm] UploadLogoForm form)
         {
-            if (_cloudinary == null)
+            var cloudinary = _serviceProvider.GetService<CloudinaryService>();
+            if (cloudinary == null)
                 return StatusCode(500, "Cloudinary no configurado");
 
             var c = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
@@ -142,8 +144,7 @@ namespace GourmetApi.Controllers.SuperAdmin
             if (!file.ContentType.StartsWith("image/")) return BadRequest("Debe ser imagen");
 
             var folder = $"menuonline/companies/{c.Slug}/logo";
-
-            var url = await _cloudinary.UploadImageAsync(file, folder);
+            var url = await cloudinary.UploadImageAsync(file, folder);
 
             c.LogoUrl = url;
             await _db.SaveChangesAsync();
