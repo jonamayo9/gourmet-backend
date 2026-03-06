@@ -16,10 +16,9 @@ namespace GourmetApi.Controllers.SuperAdmin
         private readonly AppDbContext _db;
         private readonly CloudinaryService? _cloudinary;
 
-        public CompaniesController(AppDbContext db, CloudinaryService? cloudinary = null)
+        public CompaniesController(AppDbContext db)
         {
             _db = db;
-            _cloudinary = cloudinary;
         }
 
         [HttpGet]
