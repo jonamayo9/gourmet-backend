@@ -23,24 +23,31 @@ namespace GourmetApi.Controllers.SuperAdmin
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CompanyDto>>> GetAll()
+        public async Task<ActionResult> GetAll()
         {
-            var list = await _db.Companies.AsNoTracking()
-              .OrderByDescending(x => x.CreatedAtUtc)
-              .Select(x => new CompanyDto
-              {
-                  Id = x.Id,
-                  Slug = x.Slug,
-                  Name = x.Name,
-                  Whatsapp = x.Whatsapp,
-                  Alias = x.Alias,
-                  LogoUrl = x.LogoUrl,
-                  Enabled = x.Enabled,
-                  CreatedAtUtc = x.CreatedAtUtc
-              })
-              .ToListAsync();
+            try
+            {
+                var list = await _db.Companies.AsNoTracking()
+                    .OrderByDescending(x => x.CreatedAtUtc)
+                    .Select(x => new CompanyDto
+                    {
+                        Id = x.Id,
+                        Slug = x.Slug,
+                        Name = x.Name,
+                        Whatsapp = x.Whatsapp,
+                        Alias = x.Alias,
+                        LogoUrl = x.LogoUrl,
+                        Enabled = x.Enabled,
+                        CreatedAtUtc = x.CreatedAtUtc
+                    })
+                    .ToListAsync();
 
-            return Ok(list);
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.ToString());
+            }
         }
 
         [HttpGet("{id:int}")]
