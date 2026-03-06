@@ -132,24 +132,31 @@ namespace GourmetApi.Controllers.SuperAdmin
         [RequestSizeLimit(10_000_000)]
         public async Task<IActionResult> UploadLogo(int id, [FromForm] UploadLogoForm form)
         {
-            var cloudinary = _serviceProvider.GetService<CloudinaryService>();
-            if (cloudinary == null)
-                return StatusCode(500, "Cloudinary no configurado");
+            try
+            {
+                var cloudinary = _serviceProvider.GetService<CloudinaryService>();
+                if (cloudinary == null)
+                    return StatusCode(500, "Cloudinary no configurado");
 
-            var c = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
-            if (c == null) return NotFound("Company not found");
+                var c = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
+                if (c == null) return NotFound("Company not found");
 
-            var file = form.File;
-            if (file == null || file.Length == 0) return BadRequest("Archivo requerido");
-            if (!file.ContentType.StartsWith("image/")) return BadRequest("Debe ser imagen");
+                var file = form.File;
+                if (file == null || file.Length == 0) return BadRequest("Archivo requerido");
+                if (!file.ContentType.StartsWith("image/")) return BadRequest("Debe ser imagen");
 
-            var folder = $"menuonline/companies/{c.Slug}/logo";
-            var url = await cloudinary.UploadImageAsync(file, folder);
+                var folder = $"menuonline/companies/{c.Slug}/logo";
+                var url = await cloudinary.UploadImageAsync(file, folder);
 
-            c.LogoUrl = url;
-            await _db.SaveChangesAsync();
+                c.LogoUrl = url;
+                await _db.SaveChangesAsync();
 
-            return Ok(new { url });
+                return Ok(new { url });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.ToString());
+            }
         }
 
         [HttpDelete("{id:int}")]
