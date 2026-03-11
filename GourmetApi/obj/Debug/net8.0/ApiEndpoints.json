@@ -168,6 +168,43 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "GourmetApi.Controllers.AdminMenuItemsController",
+    "Method": "GetItemsForTables",
+    "RelativePath": "api/admin/{companySlug}/items/table-picker",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "scope",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminMenuController",
+    "Method": "GetMenuForTables",
+    "RelativePath": "api/admin/{companySlug}/menu-for-tables",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "GourmetApi.Controllers.AdminOrdersController",
     "Method": "GetOrders",
     "RelativePath": "api/admin/{companySlug}/orders",
@@ -325,6 +362,549 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "GourmetApi.Controllers.AdminTableMenuController",
+    "Method": "GetHiddenTableMenu",
+    "RelativePath": "api/admin/{companySlug}/table-menu/hidden",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableMenuController",
+    "Method": "GetPublicTableMenu",
+    "RelativePath": "api/admin/{companySlug}/table-menu/public",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionsController",
+    "Method": "GetSessionDetail",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Models.Tables.TableSessionDetailDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionsController",
+    "Method": "CloseTable",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/close",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionItemsController",
+    "Method": "GenerateOrderFromTable",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/generate-order",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionItemsController",
+    "Method": "AddDiscount",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/items/discount",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "req",
+        "Type": "GourmetApi.Dtos.TableSessionAddDiscountRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionItemsController",
+    "Method": "AddManual",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/items/manual",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "req",
+        "Type": "GourmetApi.Dtos.AddManualTableItemRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionItemsController",
+    "Method": "AddMenuItem",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/items/menu-item",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "req",
+        "Type": "GourmetApi.Dtos.TableSessionAddMenuItemRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionsController",
+    "Method": "AddProductToTable",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/items/product",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Models.Tables.AddTableItemProductDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionItemsController",
+    "Method": "GetKitchenNotifications",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/kitchen-notifications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionsController",
+    "Method": "PayTable",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/pay",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Models.Tables.PayTableSessionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionsController",
+    "Method": "RequestBill",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/{sessionId}/request-bill",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "sessionId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTableSessionItemsController",
+    "Method": "MarkKitchenNotificationRead",
+    "RelativePath": "api/admin/{companySlug}/table-sessions/kitchen-notifications/{orderId}/read",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "GetTables",
+    "RelativePath": "api/admin/{companySlug}/tables",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[GourmetApi.Models.Tables.TableListItemDto, GourmetApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "CreateTable",
+    "RelativePath": "api/admin/{companySlug}/tables",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Models.Tables.UpsertRestaurantTableDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "UpdateTable",
+    "RelativePath": "api/admin/{companySlug}/tables/{tableId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "tableId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Models.Tables.UpsertRestaurantTableDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "DeleteTable",
+    "RelativePath": "api/admin/{companySlug}/tables/{tableId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "tableId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "OpenTable",
+    "RelativePath": "api/admin/{companySlug}/tables/{tableId}/open",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "tableId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Models.Tables.OpenTableRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "GetTableConfig",
+    "RelativePath": "api/admin/{companySlug}/tables/config",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Models.Tables.TableConfigDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "UpdateTableConfig",
+    "RelativePath": "api/admin/{companySlug}/tables/config",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Models.Tables.TableConfigDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "GenerateTables",
+    "RelativePath": "api/admin/{companySlug}/tables/generate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Models.Tables.GenerateTablesDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "GetHistory",
+    "RelativePath": "api/admin/{companySlug}/tables/history",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "date",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[GourmetApi.Models.Tables.TableHistoryDto, GourmetApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminTablesController",
+    "Method": "GetTablesSetup",
+    "RelativePath": "api/admin/{companySlug}/tables/setup",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "includeDeleted",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "GourmetApi.Controllers.UploadsController",
     "Method": "UploadImage",
     "RelativePath": "api/admin/{companySlug}/uploads/image",
@@ -344,6 +924,26 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.Admin.AdminMeController",
+    "Method": "GetMe",
+    "RelativePath": "api/admin/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Dtos.Admin.AdminMeDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "GourmetApi.Controllers.AuthController",
@@ -370,6 +970,32 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.MercadoPagoWebhookController",
+    "Method": "Receive",
+    "RelativePath": "api/payments/mercadopago/webhook",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.MercadoPagoWebhookController",
+    "Method": "SyncPayment",
+    "RelativePath": "api/payments/mercadopago/webhook/orders/{orderId}/sync-payment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "GourmetApi.Controllers.PublicController",
@@ -407,6 +1033,68 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.MercadoPagoPublicController",
+    "Method": "CreatePayment",
+    "RelativePath": "api/public/{companySlug}/payments/mercadopago",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Dtos.CreateMercadoPagoOrderRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Dtos.CreateMercadoPagoOrderResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.MercadoPagoPublicController",
+    "Method": "RetryPayment",
+    "RelativePath": "api/public/{companySlug}/payments/mercadopago/retry/{orderId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Dtos.CreateMercadoPagoOrderResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "GourmetApi.Controllers.SuperAdmin.AdminUsersController",
@@ -471,6 +1159,27 @@
       {
         "Name": "dto",
         "Type": "GourmetApi.Dtos.SuperAdmin.SetPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.SuperAdmin.AdminUsersController",
+    "Method": "UpdatePermissions",
+    "RelativePath": "api/superadmin/admin-users/{id}/permissions",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "GourmetApi.Dtos.SuperAdmin.UpdateAdminUserPermissionsDto",
         "IsRequired": true
       }
     ],

@@ -21,5 +21,10 @@
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public string? ImageUrl { get; set; }
+
+        // NUEVO
+        public bool VisibleInPublicMenu { get; set; } = true;
+        public bool VisibleInTables { get; set; } = true;
+        public bool IsInternalForTables { get; set; } = false;
     }
 }

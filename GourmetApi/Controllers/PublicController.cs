@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using GourmetApi.Data;
 using GourmetApi.Models;
+using GourmetApi.Entities;
+using OrderEntity = GourmetApi.Entities.Order;
 
 namespace GourmetApi.Controllers;
 
@@ -20,21 +22,27 @@ public class PublicController : ControllerBase
     public async Task<IActionResult> GetMenu([FromRoute] string companySlug)
     {
         var company = await _db.Companies.AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Slug == companySlug);
+            .FirstOrDefaultAsync(x => x.Slug == companySlug && x.Enabled);
 
         if (company == null)
             return NotFound(new { message = "Empresa no encontrada" });
 
-        var shifts = await _db.Shifts.AsNoTracking()
-            .Where(s => s.CompanyId == company.Id && s.Enabled)
-            .OrderBy(s => s.OpenHour)
-            .Select(s => new
-            {
-                dia = s.DayOfWeek,
-                abre = s.OpenHour,
-                cierra = s.CloseHour
-            })
-            .ToListAsync();
+        var shifts = new List<object>();
+
+        if (company.FeatureShiftsEnabled)
+        {
+            shifts = await _db.Shifts.AsNoTracking()
+                .Where(s => s.CompanyId == company.Id && s.Enabled)
+                .OrderBy(s => s.OpenHour)
+                .Select(s => new
+                {
+                    dia = s.DayOfWeek,
+                    abre = s.OpenHour,
+                    cierra = s.CloseHour
+                })
+                .Cast<object>()
+                .ToListAsync();
+        }
 
         var categories = await _db.Categories.AsNoTracking()
             .Where(c => c.CompanyId == company.Id && c.Enabled)
@@ -43,7 +51,11 @@ public class PublicController : ControllerBase
             .ToListAsync();
 
         var menu = await _db.MenuItems.AsNoTracking()
-            .Where(i => i.CompanyId == company.Id && i.Enabled && !i.IsDeleted)
+            .Where(i =>
+                i.CompanyId == company.Id &&
+                i.Enabled &&
+                !i.IsDeleted &&
+                i.VisibleInPublicMenu)
             .Join(_db.Categories.AsNoTracking(),
                 i => i.CategoryId,
                 c => c.Id,
@@ -58,7 +70,6 @@ public class PublicController : ControllerBase
                 nombre = x.i.Name,
                 precio = x.i.Price,
                 descripcion = x.i.Description,
-                // ✅ imagen real del item (fallback al logo si no tiene)
                 img = string.IsNullOrWhiteSpace(x.i.ImageUrl) ? company.LogoUrl : x.i.ImageUrl
             })
             .ToListAsync();
@@ -71,7 +82,13 @@ public class PublicController : ControllerBase
                 logo = company.LogoUrl,
                 telefono = company.Whatsapp,
                 alias = company.Alias,
-                turnos = shifts
+                turnos = shifts,
+
+                ordersEnabled = company.FeatureOrdersEnabled,
+                mercadoPagoEnabled = company.MercadoPagoEnabled,
+                whatsappEnabled = !string.IsNullOrWhiteSpace(company.Whatsapp),
+                shiftsEnabled = company.FeatureShiftsEnabled,
+                aliasEnabled = !string.IsNullOrWhiteSpace(company.Alias)
             },
             categorias = categories,
             menu = menu
@@ -82,12 +99,17 @@ public class PublicController : ControllerBase
 
     [HttpPost("{companySlug}/orders")]
     public async Task<IActionResult> CreateOrder(
-    [FromRoute] string companySlug,
-    [FromBody] OrderCreateRequestDto req)
+        [FromRoute] string companySlug,
+        [FromBody] OrderCreateRequestDto req)
     {
-        var company = await _db.Companies.FirstOrDefaultAsync(x => x.Slug == companySlug);
+        var company = await _db.Companies
+            .FirstOrDefaultAsync(x => x.Slug == companySlug && x.Enabled);
+
         if (company == null)
             return NotFound(new { message = "Empresa no encontrada" });
+
+        if (!company.FeatureOrdersEnabled)
+            return StatusCode(403, new { message = "La empresa no tiene pedidos habilitados." });
 
         if (string.IsNullOrWhiteSpace(req.CustomerName) ||
             string.IsNullOrWhiteSpace(req.Address))
@@ -102,10 +124,12 @@ public class PublicController : ControllerBase
         var ids = req.Items.Select(x => x.MenuItemId).Distinct().ToList();
 
         var products = await _db.MenuItems.AsNoTracking()
-            .Where(x => x.CompanyId == company.Id &&
-                        x.Enabled &&
-                        !x.IsDeleted &&
-                        ids.Contains(x.Id))
+            .Where(x =>
+                x.CompanyId == company.Id &&
+                x.Enabled &&
+                !x.IsDeleted &&
+                x.VisibleInPublicMenu &&
+                ids.Contains(x.Id))
             .Select(x => new { x.Id, x.Name, x.Price })
             .ToListAsync();
 
@@ -120,7 +144,7 @@ public class PublicController : ControllerBase
 
         var orderNumber = $"A-{(countToday + 1).ToString("0000")}";
 
-        var order = new GourmetApi.Entities.Order
+        var order = new OrderEntity
         {
             CompanyId = company.Id,
             CustomerName = req.CustomerName.Trim(),
@@ -139,7 +163,7 @@ public class PublicController : ControllerBase
             var lineTotal = p.Price * it.Qty;
             total += lineTotal;
 
-            order.Items.Add(new GourmetApi.Entities.OrderItem
+            order.Items.Add(new OrderItem
             {
                 MenuItemId = p.Id,
                 Qty = it.Qty,

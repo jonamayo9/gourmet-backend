@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GourmetApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c09fa7aceaecc19f8e0faf801299cc98c7d77345")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3203673fcee69c3b296709d9eaea2ae8004deae9")]
 [assembly: System.Reflection.AssemblyProductAttribute("GourmetApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GourmetApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

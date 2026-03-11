@@ -145,6 +145,57 @@
         }
       }
     },
+    "/api/admin/me": {
+      "get": {
+        "tags": [
+          "AdminMe"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMeDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMeDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminMeDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/menu-for-tables": {
+      "get": {
+        "tags": [
+          "AdminMenu"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/admin/{companySlug}/items": {
       "get": {
         "tags": [
@@ -199,6 +250,36 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/items/table-picker": {
+      "get": {
+        "tags": [
+          "AdminMenuItems"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "public"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -543,6 +624,931 @@
         }
       }
     },
+    "/api/admin/{companySlug}/table-menu/public": {
+      "get": {
+        "tags": [
+          "AdminTableMenu"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-menu/hidden": {
+      "get": {
+        "tags": [
+          "AdminTableMenu"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/tables": {
+      "get": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableListItemDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableListItemDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableListItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRestaurantTableDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRestaurantTableDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRestaurantTableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/tables/{tableId}/open": {
+      "post": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenTableRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenTableRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenTableRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/tables/history": {
+      "get": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableHistoryDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableHistoryDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableHistoryDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/tables/config": {
+      "get": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableConfigDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableConfigDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableConfigDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableConfigDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableConfigDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableConfigDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/tables/generate": {
+      "post": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateTablesDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateTablesDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateTablesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/tables/setup": {
+      "get": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeDeleted",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/tables/{tableId}": {
+      "put": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRestaurantTableDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRestaurantTableDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertRestaurantTableDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "AdminTables"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tableId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/items/menu-item": {
+      "post": {
+        "tags": [
+          "AdminTableSessionItems"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableSessionAddMenuItemRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableSessionAddMenuItemRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableSessionAddMenuItemRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/items/manual": {
+      "post": {
+        "tags": [
+          "AdminTableSessionItems"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddManualTableItemRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddManualTableItemRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddManualTableItemRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/generate-order": {
+      "post": {
+        "tags": [
+          "AdminTableSessionItems"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/items/discount": {
+      "post": {
+        "tags": [
+          "AdminTableSessionItems"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableSessionAddDiscountRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableSessionAddDiscountRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/TableSessionAddDiscountRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/kitchen-notifications": {
+      "get": {
+        "tags": [
+          "AdminTableSessionItems"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/kitchen-notifications/{orderId}/read": {
+      "post": {
+        "tags": [
+          "AdminTableSessionItems"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/items/product": {
+      "post": {
+        "tags": [
+          "AdminTableSessions"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTableItemProductDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTableItemProductDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTableItemProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}": {
+      "get": {
+        "tags": [
+          "AdminTableSessions"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableSessionDetailDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableSessionDetailDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TableSessionDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/request-bill": {
+      "patch": {
+        "tags": [
+          "AdminTableSessions"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/pay": {
+      "patch": {
+        "tags": [
+          "AdminTableSessions"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayTableSessionDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayTableSessionDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PayTableSessionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/table-sessions/{sessionId}/close": {
+      "patch": {
+        "tags": [
+          "AdminTableSessions"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/superadmin/admin-users": {
       "get": {
         "tags": [
@@ -712,6 +1718,48 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/SetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/superadmin/admin-users/{id}/permissions": {
+      "put": {
+        "tags": [
+          "AdminUsers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdminUserPermissionsDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdminUserPermissionsDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdminUserPermissionsDto"
               }
             }
           }
@@ -999,6 +2047,147 @@
         }
       }
     },
+    "/api/public/{companySlug}/payments/mercadopago": {
+      "post": {
+        "tags": [
+          "MercadoPagoPublic"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMercadoPagoOrderRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMercadoPagoOrderRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMercadoPagoOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/public/{companySlug}/payments/mercadopago/retry/{orderId}": {
+      "post": {
+        "tags": [
+          "MercadoPagoPublic"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/mercadopago/webhook": {
+      "post": {
+        "tags": [
+          "MercadoPagoWebhook"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/payments/mercadopago/webhook/orders/{orderId}/sync-payment": {
+      "post": {
+        "tags": [
+          "MercadoPagoWebhook"
+        ],
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/public/{companySlug}/menu": {
       "get": {
         "tags": [
@@ -1181,6 +2370,114 @@
   },
   "components": {
     "schemas": {
+      "AddManualTableItemRequestDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AddTableItemProductDto": {
+        "type": "object",
+        "properties": {
+          "menuItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AdminMeDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "companySlug": {
+            "type": "string",
+            "nullable": true
+          },
+          "companyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "featureOrdersEnabled": {
+            "type": "boolean"
+          },
+          "featureProductsEnabled": {
+            "type": "boolean"
+          },
+          "featureCategoriesEnabled": {
+            "type": "boolean"
+          },
+          "featureShiftsEnabled": {
+            "type": "boolean"
+          },
+          "featureDashboardEnabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoEnabled": {
+            "type": "boolean"
+          },
+          "canAccessOrders": {
+            "type": "boolean"
+          },
+          "canAccessProducts": {
+            "type": "boolean"
+          },
+          "canAccessCategories": {
+            "type": "boolean"
+          },
+          "canAccessShifts": {
+            "type": "boolean"
+          },
+          "canAccessDashboard": {
+            "type": "boolean"
+          },
+          "canAccessTablesWaiter": {
+            "type": "boolean"
+          },
+          "canAccessTableConfig": {
+            "type": "boolean"
+          },
+          "canAccessTableDashboard": {
+            "type": "boolean"
+          },
+          "featureTableManagementEnabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "AdminUserDto": {
         "type": "object",
         "properties": {
@@ -1212,6 +2509,30 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "canAccessOrders": {
+            "type": "boolean"
+          },
+          "canAccessProducts": {
+            "type": "boolean"
+          },
+          "canAccessCategories": {
+            "type": "boolean"
+          },
+          "canAccessShifts": {
+            "type": "boolean"
+          },
+          "canAccessDashboard": {
+            "type": "boolean"
+          },
+          "canAccessTablesWaiter": {
+            "type": "boolean"
+          },
+          "canAccessTableConfig": {
+            "type": "boolean"
+          },
+          "canAccessTableDashboard": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -1266,6 +2587,49 @@
           "createdAtUtc": {
             "type": "string",
             "format": "date-time"
+          },
+          "mercadoPagoEnabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoHasToken": {
+            "type": "boolean"
+          },
+          "mercadoPagoMaskedToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "featureOrdersEnabled": {
+            "type": "boolean"
+          },
+          "featureProductsEnabled": {
+            "type": "boolean"
+          },
+          "featureCategoriesEnabled": {
+            "type": "boolean"
+          },
+          "featureShiftsEnabled": {
+            "type": "boolean"
+          },
+          "featureDashboardEnabled": {
+            "type": "boolean"
+          },
+          "featureMenuOnlyEnabled": {
+            "type": "boolean"
+          },
+          "featureTableManagementEnabled": {
+            "type": "boolean"
+          },
+          "tablesEnabled": {
+            "type": "boolean"
+          },
+          "enableGuestCount": {
+            "type": "boolean"
+          },
+          "enableAdultsChildrenSplit": {
+            "type": "boolean"
+          },
+          "requireAdultsChildrenSplit": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -1286,6 +2650,48 @@
             "nullable": true
           },
           "enabled": {
+            "type": "boolean"
+          },
+          "canAccessOrders": {
+            "type": "boolean"
+          },
+          "canAccessProducts": {
+            "type": "boolean"
+          },
+          "canAccessCategories": {
+            "type": "boolean"
+          },
+          "canAccessShifts": {
+            "type": "boolean"
+          },
+          "canAccessDashboard": {
+            "type": "boolean"
+          },
+          "featureMenuOnlyEnabled": {
+            "type": "boolean"
+          },
+          "featureTableManagementEnabled": {
+            "type": "boolean"
+          },
+          "tablesEnabled": {
+            "type": "boolean"
+          },
+          "enableGuestCount": {
+            "type": "boolean"
+          },
+          "enableAdultsChildrenSplit": {
+            "type": "boolean"
+          },
+          "requireAdultsChildrenSplit": {
+            "type": "boolean"
+          },
+          "canAccessTablesWaiter": {
+            "type": "boolean"
+          },
+          "canAccessTableConfig": {
+            "type": "boolean"
+          },
+          "canAccessTableDashboard": {
             "type": "boolean"
           }
         },
@@ -1316,6 +2722,117 @@
           },
           "enabled": {
             "type": "boolean"
+          },
+          "mercadoPagoEnabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoAccessToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "featureOrdersEnabled": {
+            "type": "boolean"
+          },
+          "featureProductsEnabled": {
+            "type": "boolean"
+          },
+          "featureCategoriesEnabled": {
+            "type": "boolean"
+          },
+          "featureShiftsEnabled": {
+            "type": "boolean"
+          },
+          "featureDashboardEnabled": {
+            "type": "boolean"
+          },
+          "featureMenuOnlyEnabled": {
+            "type": "boolean"
+          },
+          "featureTableManagementEnabled": {
+            "type": "boolean"
+          },
+          "tablesEnabled": {
+            "type": "boolean"
+          },
+          "enableGuestCount": {
+            "type": "boolean"
+          },
+          "enableAdultsChildrenSplit": {
+            "type": "boolean"
+          },
+          "requireAdultsChildrenSplit": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateMercadoPagoOrderItemRequest": {
+        "type": "object",
+        "properties": {
+          "menuItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateMercadoPagoOrderRequest": {
+        "type": "object",
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateMercadoPagoOrderItemRequest"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateMercadoPagoOrderResponse": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "initPoint": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenerateTablesDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "defaultCapacity": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false
@@ -1363,6 +2880,30 @@
             "nullable": true
           },
           "companySlug": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "OpenTableRequestDto": {
+        "type": "object",
+        "properties": {
+          "totalGuests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "adults": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "children": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "notes": {
             "type": "string",
             "nullable": true
           }
@@ -1426,10 +2967,25 @@
           1,
           2,
           3,
-          4
+          4,
+          5
         ],
         "type": "integer",
         "format": "int32"
+      },
+      "PayTableSessionDto": {
+        "type": "object",
+        "properties": {
+          "paymentMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentStatus": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
       },
       "SetEnabledDto": {
         "type": "object",
@@ -1472,6 +3028,391 @@
         },
         "additionalProperties": false
       },
+      "TableConfigDto": {
+        "type": "object",
+        "properties": {
+          "tablesEnabled": {
+            "type": "boolean"
+          },
+          "enableGuestCount": {
+            "type": "boolean"
+          },
+          "enableAdultsChildrenSplit": {
+            "type": "boolean"
+          },
+          "requireAdultsChildrenSplit": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableHistoryDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tableId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tableNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tableName": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/TableSessionStatus"
+          },
+          "totalGuests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "adults": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "children": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "total": {
+            "type": "number",
+            "format": "double"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TableHistoryItemDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableHistoryItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "lineTotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "isManual": {
+            "type": "boolean"
+          },
+          "isInternalProduct": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableListItemDto": {
+        "type": "object",
+        "properties": {
+          "tableId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totalGuests": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "adults": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "children": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "currentTotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableSessionAddDiscountRequestDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "amount": {
+            "type": "number",
+            "format": "double"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableSessionAddMenuItemRequestDto": {
+        "type": "object",
+        "properties": {
+          "menuItemId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableSessionDetailDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tableId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tableNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tableName": {
+            "type": "string",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TableSessionStatus"
+          },
+          "totalGuests": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "adults": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "children": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "total": {
+            "type": "number",
+            "format": "double"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "openedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "hasPendingKitchenItems": {
+            "type": "boolean"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TableSessionItemDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableSessionItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "menuItemId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "qty": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "unitPrice": {
+            "type": "number",
+            "format": "double"
+          },
+          "lineTotal": {
+            "type": "number",
+            "format": "double"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "isManual": {
+            "type": "boolean"
+          },
+          "isInternalProduct": {
+            "type": "boolean"
+          },
+          "isDiscount": {
+            "type": "boolean"
+          },
+          "sentToKitchen": {
+            "type": "boolean"
+          },
+          "sentToKitchenAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "kitchenStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "isFinished": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TableSessionStatus": {
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "UpdateAdminUserPermissionsDto": {
+        "type": "object",
+        "properties": {
+          "canAccessOrders": {
+            "type": "boolean"
+          },
+          "canAccessProducts": {
+            "type": "boolean"
+          },
+          "canAccessCategories": {
+            "type": "boolean"
+          },
+          "canAccessShifts": {
+            "type": "boolean"
+          },
+          "canAccessDashboard": {
+            "type": "boolean"
+          },
+          "canAccessTablesWaiter": {
+            "type": "boolean"
+          },
+          "canAccessTableConfig": {
+            "type": "boolean"
+          },
+          "canAccessTableDashboard": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "UpdateCompanyDto": {
         "type": "object",
         "properties": {
@@ -1492,6 +3433,46 @@
             "nullable": true
           },
           "enabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoEnabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoAccessToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "featureOrdersEnabled": {
+            "type": "boolean"
+          },
+          "featureProductsEnabled": {
+            "type": "boolean"
+          },
+          "featureCategoriesEnabled": {
+            "type": "boolean"
+          },
+          "featureShiftsEnabled": {
+            "type": "boolean"
+          },
+          "featureDashboardEnabled": {
+            "type": "boolean"
+          },
+          "featureMenuOnlyEnabled": {
+            "type": "boolean"
+          },
+          "featureTableManagementEnabled": {
+            "type": "boolean"
+          },
+          "tablesEnabled": {
+            "type": "boolean"
+          },
+          "enableGuestCount": {
+            "type": "boolean"
+          },
+          "enableAdultsChildrenSplit": {
+            "type": "boolean"
+          },
+          "requireAdultsChildrenSplit": {
             "type": "boolean"
           }
         },
@@ -1531,6 +3512,40 @@
           "imageUrl": {
             "type": "string",
             "nullable": true
+          },
+          "visibleInPublicMenu": {
+            "type": "boolean"
+          },
+          "visibleInTables": {
+            "type": "boolean"
+          },
+          "isInternalForTables": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpsertRestaurantTableDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "order": {
+            "type": "integer",
+            "format": "int32"
           }
         },
         "additionalProperties": false

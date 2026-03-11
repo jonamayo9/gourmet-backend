@@ -30,6 +30,30 @@ namespace GourmetApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("CanAccessCategories")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanAccessDashboard")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanAccessOrders")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanAccessProducts")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanAccessShifts")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanAccessTableConfig")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanAccessTableDashboard")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("CanAccessTablesWaiter")
+                        .HasColumnType("boolean");
+
                     b.Property<int?>("CompanyId")
                         .HasColumnType("integer");
 
@@ -87,6 +111,12 @@ namespace GourmetApi.Migrations
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("VisibleInPublicMenu")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("VisibleInTables")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
@@ -108,19 +138,58 @@ namespace GourmetApi.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("EnableAdultsChildrenSplit")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("EnableGuestCount")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("FeatureCategoriesEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("FeatureDashboardEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("FeatureMenuOnlyEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("FeatureOrdersEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("FeatureProductsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("FeatureShiftsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("FeatureTableManagementEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<string>("LogoUrl")
                         .HasColumnType("text");
 
+                    b.Property<string>("MercadoPagoAccessToken")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("MercadoPagoEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("RequireAdultsChildrenSplit")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("TablesEnabled")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Whatsapp")
                         .HasColumnType("text");
@@ -163,12 +232,21 @@ namespace GourmetApi.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsInternalForTables")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric(10,2)");
+
+                    b.Property<bool>("VisibleInPublicMenu")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("VisibleInTables")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -201,19 +279,49 @@ namespace GourmetApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsTableOrder")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("LastPaymentId")
+                        .HasColumnType("text");
+
                     b.Property<string>("OrderNumber")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PaymentProvider")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PaymentReference")
+                        .HasColumnType("text");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RestaurantTableId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TableName")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("TableSessionId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Total")
                         .HasColumnType("numeric");
+
+                    b.Property<bool>("WaiterNotified")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 
@@ -233,7 +341,7 @@ namespace GourmetApi.Migrations
                     b.Property<decimal>("LineTotal")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("MenuItemId")
+                    b.Property<int?>("MenuItemId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")
@@ -312,6 +420,160 @@ namespace GourmetApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RestaurantTable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("RestaurantTables");
+                });
+
+            modelBuilder.Entity("TableSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("Adults")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Children")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("OpenedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentMethod")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PaymentStatus")
+                        .HasColumnType("text");
+
+                    b.Property<int>("RestaurantTableId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("TotalGuests")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("RestaurantTableId");
+
+                    b.ToTable("TableSessions");
+                });
+
+            modelBuilder.Entity("TableSessionItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsDiscount")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsInternalProduct")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsManual")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("LineTotal")
+                        .HasColumnType("numeric");
+
+                    b.Property<int?>("MenuItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("SentToKitchen")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("SentToKitchenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TableSessionId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuItemId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("TableSessionId");
+
+                    b.ToTable("TableSessionItems");
+                });
+
             modelBuilder.Entity("GourmetApi.Entities.AdminUser", b =>
                 {
                     b.HasOne("GourmetApi.Entities.Company", "Company")
@@ -385,6 +647,59 @@ namespace GourmetApi.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("RestaurantTable", b =>
+                {
+                    b.HasOne("GourmetApi.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("TableSession", b =>
+                {
+                    b.HasOne("GourmetApi.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RestaurantTable", "RestaurantTable")
+                        .WithMany()
+                        .HasForeignKey("RestaurantTableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("RestaurantTable");
+                });
+
+            modelBuilder.Entity("TableSessionItem", b =>
+                {
+                    b.HasOne("GourmetApi.Entities.MenuItem", "MenuItem")
+                        .WithMany()
+                        .HasForeignKey("MenuItemId");
+
+                    b.HasOne("GourmetApi.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("TableSession", "TableSession")
+                        .WithMany("Items")
+                        .HasForeignKey("TableSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MenuItem");
+
+                    b.Navigation("Order");
+
+                    b.Navigation("TableSession");
+                });
+
             modelBuilder.Entity("GourmetApi.Entities.Category", b =>
                 {
                     b.Navigation("Items");
@@ -402,6 +717,11 @@ namespace GourmetApi.Migrations
                 });
 
             modelBuilder.Entity("GourmetApi.Entities.Order", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("TableSession", b =>
                 {
                     b.Navigation("Items");
                 });

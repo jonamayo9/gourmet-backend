@@ -14,6 +14,9 @@
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public bool VisibleInPublicMenu { get; set; } = true;
+        public bool VisibleInTables { get; set; } = true;
+
         public ICollection<MenuItem> Items { get; set; } = new List<MenuItem>();
     }
 }

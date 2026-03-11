@@ -44,7 +44,16 @@ namespace GourmetApi.Controllers.SuperAdmin
                     Role = x.Role.ToString(),
                     CompanyId = x.CompanyId,
                     CreatedAt = x.CreatedAt,
-                    LastLoginAt = x.LastLoginAt
+                    LastLoginAt = x.LastLoginAt,
+
+                    CanAccessOrders = x.CanAccessOrders,
+                    CanAccessProducts = x.CanAccessProducts,
+                    CanAccessCategories = x.CanAccessCategories,
+                    CanAccessShifts = x.CanAccessShifts,
+                    CanAccessDashboard = x.CanAccessDashboard,
+                    CanAccessTablesWaiter = x.CanAccessTablesWaiter,
+                    CanAccessTableConfig = x.CanAccessTableConfig,
+                    CanAccessTableDashboard = x.CanAccessTableDashboard
                 })
                 .ToListAsync();
 
@@ -60,8 +69,8 @@ namespace GourmetApi.Controllers.SuperAdmin
             if (string.IsNullOrWhiteSpace(dto.Password) || dto.Password.Length < 4) return BadRequest("Password inválida.");
             if (dto.CompanyId <= 0) return BadRequest("CompanyId inválido.");
 
-            var companyExists = await _db.Companies.AnyAsync(x => x.Id == dto.CompanyId);
-            if (!companyExists) return BadRequest("CompanyId inexistente.");
+            var company = await _db.Companies.FirstOrDefaultAsync(x => x.Id == dto.CompanyId);
+            if (company == null) return BadRequest("CompanyId inexistente.");
 
             var exists = await _db.AdminUsers.AnyAsync(x => x.Email.ToLower() == email);
             if (exists) return Conflict("Ya existe un usuario con ese email.");
@@ -72,7 +81,16 @@ namespace GourmetApi.Controllers.SuperAdmin
                 Enabled = dto.Enabled,
                 Role = AdminRole.CompanyAdmin,
                 CompanyId = dto.CompanyId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+
+                CanAccessOrders = company.FeatureOrdersEnabled && dto.CanAccessOrders,
+                CanAccessProducts = company.FeatureProductsEnabled && dto.CanAccessProducts,
+                CanAccessCategories = company.FeatureCategoriesEnabled && dto.CanAccessCategories,
+                CanAccessShifts = company.FeatureShiftsEnabled && dto.CanAccessShifts,
+                CanAccessDashboard = company.FeatureDashboardEnabled && dto.CanAccessDashboard,
+                CanAccessTablesWaiter = company.FeatureTableManagementEnabled && dto.CanAccessTablesWaiter,
+                CanAccessTableConfig = company.FeatureTableManagementEnabled && dto.CanAccessTableConfig,
+                CanAccessTableDashboard = company.FeatureTableManagementEnabled && dto.CanAccessTableDashboard,
             };
 
             // ✅ usar SIEMPRE PasswordHasher (porque tu Auth usa PasswordHasher)
@@ -119,6 +137,36 @@ namespace GourmetApi.Controllers.SuperAdmin
             return NoContent();
         }
 
+        // ✅ PUT /api/superadmin/admin-users/{id}/permissions
+        [HttpPut("{id:int}/permissions")]
+        public async Task<ActionResult> UpdatePermissions([FromRoute] int id, [FromBody] UpdateAdminUserPermissionsDto dto)
+        {
+            var u = await _db.AdminUsers.FirstOrDefaultAsync(x => x.Id == id);
+            if (u == null) return NotFound("Usuario inexistente.");
+
+            if (u.Role == AdminRole.SuperAdmin)
+                return BadRequest("No se pueden modificar permisos de un SuperAdmin desde acá.");
+
+            if (!u.CompanyId.HasValue)
+                return BadRequest("El usuario no tiene empresa asociada.");
+
+            var company = await _db.Companies.FirstOrDefaultAsync(x => x.Id == u.CompanyId.Value);
+            if (company == null)
+                return BadRequest("Empresa inexistente.");
+
+            u.CanAccessOrders = company.FeatureOrdersEnabled && dto.CanAccessOrders;
+            u.CanAccessProducts = company.FeatureProductsEnabled && dto.CanAccessProducts;
+            u.CanAccessCategories = company.FeatureCategoriesEnabled && dto.CanAccessCategories;
+            u.CanAccessShifts = company.FeatureShiftsEnabled && dto.CanAccessShifts;
+            u.CanAccessDashboard = company.FeatureDashboardEnabled && dto.CanAccessDashboard;
+            u.CanAccessTablesWaiter = company.FeatureTableManagementEnabled && dto.CanAccessTablesWaiter;
+            u.CanAccessTableConfig = company.FeatureTableManagementEnabled && dto.CanAccessTableConfig;
+            u.CanAccessTableDashboard = company.FeatureTableManagementEnabled && dto.CanAccessTableDashboard;
+
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
         private static AdminUserDto ToDto(AdminUser x) => new AdminUserDto
         {
             Id = x.Id,
@@ -127,7 +175,16 @@ namespace GourmetApi.Controllers.SuperAdmin
             Role = x.Role.ToString(),
             CompanyId = x.CompanyId,
             CreatedAt = x.CreatedAt,
-            LastLoginAt = x.LastLoginAt
+            LastLoginAt = x.LastLoginAt,
+
+            CanAccessOrders = x.CanAccessOrders,
+            CanAccessProducts = x.CanAccessProducts,
+            CanAccessCategories = x.CanAccessCategories,
+            CanAccessShifts = x.CanAccessShifts,
+            CanAccessDashboard = x.CanAccessDashboard,
+            CanAccessTablesWaiter = x.CanAccessTablesWaiter,
+            CanAccessTableConfig = x.CanAccessTableConfig,
+            CanAccessTableDashboard = x.CanAccessTableDashboard
         };
     }
 }

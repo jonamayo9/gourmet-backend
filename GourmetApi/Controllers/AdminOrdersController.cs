@@ -20,7 +20,10 @@ namespace GourmetApi.Controllers
 
         [Authorize]
         [HttpGet("orders")]
-        public async Task<IActionResult> GetOrders(string companySlug, [FromQuery] DateOnly? date, [FromQuery] OrderStatus? status)
+        public async Task<IActionResult> GetOrders(
+     string companySlug,
+     [FromQuery] DateOnly? date,
+     [FromQuery] OrderStatus? status)
         {
             var company = await _db.Companies
                 .FirstOrDefaultAsync(c => c.Slug == companySlug);
@@ -28,15 +31,21 @@ namespace GourmetApi.Controllers
             if (company == null)
                 return NotFound("Company not found");
 
-            var q = _db.Orders.AsNoTracking()
+            var q = _db.Orders
+                .AsNoTracking()
                 .Where(o => o.CompanyId == company.Id);
 
             if (date.HasValue)
             {
-                var targetDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow);
+                var targetDate = date.Value;
 
-                var start = DateTime.SpecifyKind(targetDate.ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
-                var end = DateTime.SpecifyKind(targetDate.AddDays(1).ToDateTime(TimeOnly.MinValue), DateTimeKind.Utc);
+                var start = DateTime.SpecifyKind(
+                    targetDate.ToDateTime(TimeOnly.MinValue),
+                    DateTimeKind.Utc);
+
+                var end = DateTime.SpecifyKind(
+                    targetDate.AddDays(1).ToDateTime(TimeOnly.MinValue),
+                    DateTimeKind.Utc);
 
                 q = q.Where(o => o.CreatedAt >= start && o.CreatedAt < end);
             }
@@ -52,7 +61,18 @@ namespace GourmetApi.Controllers
                     o.OrderNumber,
                     o.CreatedAt,
                     o.Total,
-                    o.Status
+                    status = (int)o.Status,
+
+                    o.CustomerName,
+                    o.Address,
+
+                    o.PaymentMethod,
+                    paymentStatus = o.PaymentStatus,
+
+                    o.IsTableOrder,
+                    o.TableName,
+                    o.TableSessionId,
+                    o.RestaurantTableId
                 })
                 .ToListAsync();
 
@@ -64,12 +84,23 @@ namespace GourmetApi.Controllers
         public async Task<IActionResult> UpdateStatus(string companySlug, int orderId, [FromBody] UpdateOrderStatusRequestDto req)
         {
             var company = await _db.Companies.FirstOrDefaultAsync(c => c.Slug == companySlug);
-            if (company == null) return NotFound("Company not found");
+            if (company == null)
+                return NotFound("Company not found");
 
             var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == orderId && o.CompanyId == company.Id);
-            if (order == null) return NotFound("Order not found");
+            if (order == null)
+                return NotFound("Order not found");
 
-            order.Status = req.Status;
+            var newStatus = req.Status;
+
+            // Si viene "Enviado" desde cocina y es pedido de mesa,
+            // en realidad pasa a Finalizado
+            if (order.IsTableOrder && req.Status == OrderStatus.Delivered)
+            {
+                newStatus = OrderStatus.Finished;
+            }
+
+            order.Status = newStatus;
             await _db.SaveChangesAsync();
 
             return NoContent();
@@ -100,10 +131,19 @@ namespace GourmetApi.Controllers
                 order.CreatedAt,
                 order.Total,
                 status = (int)order.Status,
+
                 order.CustomerName,
                 order.Address,
+
                 order.PaymentMethod,
-                Items = order.Items.Select(i => new
+                paymentStatus = order.PaymentStatus,
+
+                order.IsTableOrder,
+                order.TableName,
+                order.TableSessionId,
+                order.RestaurantTableId,
+
+                items = order.Items.Select(i => new
                 {
                     i.Id,
                     i.MenuItemId,
@@ -112,7 +152,7 @@ namespace GourmetApi.Controllers
                     i.UnitPrice,
                     i.LineTotal,
                     i.Note
-                })
+                }).ToList()
             });
         }
     }

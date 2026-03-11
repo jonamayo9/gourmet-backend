@@ -24,5 +24,14 @@ namespace GourmetApi.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginAt { get; set; }
+
+        public bool CanAccessOrders { get; set; } = false;
+        public bool CanAccessProducts { get; set; } = false;
+        public bool CanAccessCategories { get; set; } = false;
+        public bool CanAccessShifts { get; set; } = false;
+        public bool CanAccessDashboard { get; set; } = false;
+        public bool CanAccessTablesWaiter { get; set; } = false;
+        public bool CanAccessTableConfig { get; set; } = false;
+        public bool CanAccessTableDashboard { get; set; } = false;
     }
 }

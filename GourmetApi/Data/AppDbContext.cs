@@ -16,6 +16,10 @@ public class AppDbContext : DbContext
 
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
 
+    public DbSet<RestaurantTable> RestaurantTables { get; set; }
+    public DbSet<TableSession> TableSessions { get; set; }
+    public DbSet<TableSessionItem> TableSessionItems { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

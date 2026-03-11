@@ -10,6 +10,25 @@
         public string? LogoUrl { get; set; }
         public bool Enabled { get; set; }
         public DateTime CreatedAtUtc { get; set; }
+
+        // NUEVO
+        public bool MercadoPagoEnabled { get; set; }
+        public bool MercadoPagoHasToken { get; set; }
+        public string? MercadoPagoMaskedToken { get; set; }
+
+        // Flags
+        public bool FeatureOrdersEnabled { get; set; }
+        public bool FeatureProductsEnabled { get; set; }
+        public bool FeatureCategoriesEnabled { get; set; }
+        public bool FeatureShiftsEnabled { get; set; }
+        public bool FeatureDashboardEnabled { get; set; }
+        public bool FeatureMenuOnlyEnabled { get; set; }
+        public bool FeatureTableManagementEnabled { get; set; }
+
+        public bool TablesEnabled { get; set; }
+        public bool EnableGuestCount { get; set; }
+        public bool EnableAdultsChildrenSplit { get; set; }
+        public bool RequireAdultsChildrenSplit { get; set; }
     }
 
     public class CreateCompanyDto
@@ -20,6 +39,23 @@
         public string? Alias { get; set; }
         public string? LogoUrl { get; set; }
         public bool Enabled { get; set; } = true;
+
+        // NUEVO
+        public bool MercadoPagoEnabled { get; set; } = false;
+        public string? MercadoPagoAccessToken { get; set; }
+
+        // Flags
+        public bool FeatureOrdersEnabled { get; set; }
+        public bool FeatureProductsEnabled { get; set; }
+        public bool FeatureCategoriesEnabled { get; set; }
+        public bool FeatureShiftsEnabled { get; set; }
+        public bool FeatureDashboardEnabled { get; set; }
+        public bool FeatureMenuOnlyEnabled { get; set; }
+        public bool FeatureTableManagementEnabled { get; set; }
+        public bool TablesEnabled { get; set; }
+        public bool EnableGuestCount { get; set; }
+        public bool EnableAdultsChildrenSplit { get; set; }
+        public bool RequireAdultsChildrenSplit { get; set; }
     }
 
     public class UpdateCompanyDto
@@ -29,5 +65,23 @@
         public string? Alias { get; set; }
         public string? LogoUrl { get; set; }
         public bool Enabled { get; set; } = true;
+
+        // NUEVO
+        public bool MercadoPagoEnabled { get; set; } = false;
+        public string? MercadoPagoAccessToken { get; set; }
+
+        // Flags
+        public bool FeatureOrdersEnabled { get; set; }
+        public bool FeatureProductsEnabled { get; set; }
+        public bool FeatureCategoriesEnabled { get; set; }
+        public bool FeatureShiftsEnabled { get; set; }
+        public bool FeatureDashboardEnabled { get; set; }
+        public bool FeatureMenuOnlyEnabled { get; set; }
+        public bool FeatureTableManagementEnabled { get; set; }
+
+        public bool TablesEnabled { get; set; }
+        public bool EnableGuestCount { get; set; }
+        public bool EnableAdultsChildrenSplit { get; set; }
+        public bool RequireAdultsChildrenSplit { get; set; }
     }
 }

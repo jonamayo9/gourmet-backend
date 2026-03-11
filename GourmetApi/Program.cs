@@ -1,8 +1,11 @@
 ﻿using GourmetApi.Data;
+using GourmetApi.Models;
 using GourmetApi.Services;
+using MercadoPago.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
@@ -86,13 +89,17 @@ builder.Services
   });
 
 builder.Services.AddAuthorization();
-var cloudName = builder.Configuration["Cloudinary:CloudName"];
 
-if (!string.IsNullOrEmpty(cloudName))
-{
     builder.Services.AddSingleton<CloudinaryService>();
-}
+builder.Services.Configure<MercadoPagoOptions>(
+    builder.Configuration.GetSection("MercadoPago"));
+
+builder.Services.AddScoped<MercadoPagoService>();
+
 var app = builder.Build();
+
+var mpOptions = app.Services.GetRequiredService<IOptions<MercadoPagoOptions>>().Value;
+MercadoPagoConfig.AccessToken = mpOptions.AccessToken;
 
 // (crea datos si no existen)
 using (var scope = app.Services.CreateScope())
@@ -127,5 +134,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var mpSection = app.Configuration.GetSection("MercadoPago");
+var mpToken = mpSection["AccessToken"];
+
+Console.WriteLine("MP TOKEN CONFIG:");
+Console.WriteLine(string.IsNullOrWhiteSpace(mpToken) ? "VACIO" : mpToken);
+
 
 app.Run();

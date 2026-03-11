@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using GourmetApi.Entities;
 namespace GourmetApi.Controllers;
 
 [Authorize]
@@ -69,7 +69,7 @@ public class AdminCategoriesController : ControllerBase
         if (orderExists)
             return Conflict(new { message = "Ya existe una categoría habilitada con ese orden." });
 
-        var entity = new GourmetApi.Entities.Category
+        var entity = new Category
         {
             CompanyId = company.Id,
             Name = req.Name.Trim(),
