@@ -135,5 +135,78 @@ namespace GourmetApi.Controllers
                 InitPoint = preference.InitPoint
             });
         }
+
+        [HttpGet("confirm")]
+        public async Task<ActionResult<ConfirmMercadoPagoPaymentResponse>> ConfirmPayment(
+    string companySlug,
+    [FromQuery] int orderId,
+    [FromQuery] string? paymentId)
+        {
+            var company = await _db.Companies.FirstOrDefaultAsync(x => x.Slug == companySlug);
+            if (company == null)
+                return NotFound(new ConfirmMercadoPagoPaymentResponse
+                {
+                    Ok = false,
+                    Approved = false,
+                    Message = "Empresa no encontrada."
+                });
+
+            var order = await _db.Orders
+                .FirstOrDefaultAsync(x => x.Id == orderId && x.CompanyId == company.Id);
+
+            if (order == null)
+                return NotFound(new ConfirmMercadoPagoPaymentResponse
+                {
+                    Ok = false,
+                    Approved = false,
+                    Message = "Pedido no encontrado."
+                });
+
+            var storePhone = company.Whatsapp; // o el campo que vos tengas
+            string? whatsappUrl = null;
+
+            if (!string.IsNullOrWhiteSpace(storePhone))
+            {
+                var text = $"Hola! Ya realicé el pago de mi pedido {order.OrderNumber}.";
+                whatsappUrl = $"https://wa.me/{storePhone}?text={Uri.EscapeDataString(text)}";
+            }
+
+            if (order.PaymentStatus == PaymentStatus.Approved)
+            {
+                if (!string.IsNullOrWhiteSpace(paymentId) &&
+                    !string.IsNullOrWhiteSpace(order.LastPaymentId) &&
+                    order.LastPaymentId != paymentId)
+                {
+                    return BadRequest(new ConfirmMercadoPagoPaymentResponse
+                    {
+                        Ok = false,
+                        Approved = false,
+                        OrderId = order.Id,
+                        OrderNumber = order.OrderNumber,
+                        Message = "El pago informado no coincide con el pedido."
+                    });
+                }
+
+                return Ok(new ConfirmMercadoPagoPaymentResponse
+                {
+                    Ok = true,
+                    Approved = true,
+                    OrderId = order.Id,
+                    OrderNumber = order.OrderNumber,
+                    Message = "Tu pago fue aprobado y tu pedido fue enviado al local.",
+                    StorePhone = storePhone,
+                    WhatsappUrl = whatsappUrl
+                });
+            }
+
+            return Ok(new ConfirmMercadoPagoPaymentResponse
+            {
+                Ok = true,
+                Approved = false,
+                OrderId = order.Id,
+                OrderNumber = order.OrderNumber,
+                Message = "Todavía estamos confirmando tu pago. Si ya pagaste, aguardá unos segundos y volvé a intentar."
+            });
+        }
     }
 }

@@ -194,50 +194,154 @@ namespace GourmetApi.Controllers.SuperAdmin
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCompanyDto dto)
         {
             var c = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
-            if (c == null) return NotFound();
+            if (c == null)
+            {
+                return NotFound();
+            }
 
-            var name = (dto.Name ?? "").Trim();
-            if (string.IsNullOrWhiteSpace(name)) return BadRequest("Name requerido.");
+            // NAME
+            if (dto.Name is not null)
+            {
+                var name = dto.Name.Trim();
 
-            c.Name = name;
-            c.Whatsapp = dto.Whatsapp;
-            c.Alias = dto.Alias;
-            c.LogoUrl = dto.LogoUrl;
-            c.Enabled = dto.Enabled;
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return BadRequest("Name requerido.");
+                }
 
-            // NUEVO
-            c.MercadoPagoEnabled = dto.MercadoPagoEnabled;
-            c.MercadoPagoAccessToken = NormalizeToken(dto.MercadoPagoAccessToken);
-            c.FeatureOrdersEnabled = dto.FeatureOrdersEnabled;
-            c.FeatureProductsEnabled = dto.FeatureProductsEnabled;
-            c.FeatureCategoriesEnabled = dto.FeatureCategoriesEnabled;
-            c.FeatureShiftsEnabled = dto.FeatureShiftsEnabled;
-            c.FeatureDashboardEnabled = dto.FeatureDashboardEnabled;
-            c.FeatureMenuOnlyEnabled = dto.FeatureMenuOnlyEnabled;
-            c.FeatureTableManagementEnabled = dto.FeatureTableManagementEnabled;
-            c.TablesEnabled = dto.TablesEnabled;
-            c.EnableGuestCount = dto.EnableGuestCount;
-            c.EnableAdultsChildrenSplit = dto.EnableAdultsChildrenSplit;
-            c.RequireAdultsChildrenSplit = dto.RequireAdultsChildrenSplit;
+                c.Name = name;
+            }
 
-            if (dto.FeatureMenuOnlyEnabled)
+            // WHATSAPP
+            if (dto.Whatsapp is not null)
+            {
+                c.Whatsapp = string.IsNullOrWhiteSpace(dto.Whatsapp)
+                    ? null
+                    : dto.Whatsapp.Trim();
+            }
+
+            // ALIAS
+            if (dto.Alias is not null)
+            {
+                c.Alias = string.IsNullOrWhiteSpace(dto.Alias)
+                    ? null
+                    : dto.Alias.Trim();
+            }
+
+            // LOGO
+            if (dto.ClearLogo)
+            {
+                c.LogoUrl = null;
+            }
+            else if (dto.LogoUrl is not null)
+            {
+                c.LogoUrl = string.IsNullOrWhiteSpace(dto.LogoUrl)
+                    ? null
+                    : dto.LogoUrl.Trim();
+            }
+
+            // ENABLED
+            if (dto.Enabled.HasValue)
+            {
+                c.Enabled = dto.Enabled.Value;
+            }
+
+            // MERCADO PAGO ENABLED
+            if (dto.MercadoPagoEnabled.HasValue)
+            {
+                c.MercadoPagoEnabled = dto.MercadoPagoEnabled.Value;
+            }
+
+            // MERCADO PAGO TOKEN
+            if (dto.ClearMercadoPagoAccessToken)
+            {
+                c.MercadoPagoAccessToken = null;
+            }
+            else if (dto.MercadoPagoAccessToken is not null)
+            {
+                var newToken = NormalizeToken(dto.MercadoPagoAccessToken);
+
+                if (!string.IsNullOrWhiteSpace(newToken))
+                {
+                    c.MercadoPagoAccessToken = newToken;
+                }
+            }
+
+            // FEATURES
+            if (dto.FeatureProductsEnabled.HasValue)
+            {
+                c.FeatureProductsEnabled = dto.FeatureProductsEnabled.Value;
+            }
+
+            if (dto.FeatureCategoriesEnabled.HasValue)
+            {
+                c.FeatureCategoriesEnabled = dto.FeatureCategoriesEnabled.Value;
+            }
+
+            if (dto.FeatureShiftsEnabled.HasValue)
+            {
+                c.FeatureShiftsEnabled = dto.FeatureShiftsEnabled.Value;
+            }
+
+            if (dto.FeatureDashboardEnabled.HasValue)
+            {
+                c.FeatureDashboardEnabled = dto.FeatureDashboardEnabled.Value;
+            }
+
+            if (dto.FeatureMenuOnlyEnabled.HasValue)
+            {
+                c.FeatureMenuOnlyEnabled = dto.FeatureMenuOnlyEnabled.Value;
+            }
+
+            if (dto.FeatureTableManagementEnabled.HasValue)
+            {
+                c.FeatureTableManagementEnabled = dto.FeatureTableManagementEnabled.Value;
+            }
+
+            if (dto.FeatureOrdersEnabled.HasValue)
+            {
+                c.FeatureOrdersEnabled = dto.FeatureOrdersEnabled.Value;
+            }
+
+            // SOLO MENU => NO PEDIDOS
+            if (c.FeatureMenuOnlyEnabled)
             {
                 c.FeatureOrdersEnabled = false;
             }
+
+            // CONFIG MESAS
+            if (!c.FeatureTableManagementEnabled)
+            {
+                c.TablesEnabled = false;
+                c.EnableGuestCount = false;
+                c.EnableAdultsChildrenSplit = false;
+                c.RequireAdultsChildrenSplit = false;
+            }
             else
             {
-                c.FeatureOrdersEnabled = dto.FeatureOrdersEnabled;
-            }
+                if (dto.TablesEnabled.HasValue)
+                {
+                    c.TablesEnabled = dto.TablesEnabled.Value;
+                }
 
-            if (!dto.FeatureTableManagementEnabled)
-            {
-                dto.TablesEnabled = false;
-                dto.EnableGuestCount = false;
-                dto.EnableAdultsChildrenSplit = false;
-                dto.RequireAdultsChildrenSplit = false;
+                if (dto.EnableGuestCount.HasValue)
+                {
+                    c.EnableGuestCount = dto.EnableGuestCount.Value;
+                }
+
+                if (dto.EnableAdultsChildrenSplit.HasValue)
+                {
+                    c.EnableAdultsChildrenSplit = dto.EnableAdultsChildrenSplit.Value;
+                }
+
+                if (dto.RequireAdultsChildrenSplit.HasValue)
+                {
+                    c.RequireAdultsChildrenSplit = dto.RequireAdultsChildrenSplit.Value;
+                }
             }
 
             await _db.SaveChangesAsync();
+
             return NoContent();
         }
 
