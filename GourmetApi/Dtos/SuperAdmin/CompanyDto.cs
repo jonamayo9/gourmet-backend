@@ -29,6 +29,14 @@
         public bool EnableGuestCount { get; set; }
         public bool EnableAdultsChildrenSplit { get; set; }
         public bool RequireAdultsChildrenSplit { get; set; }
+
+        public bool TransferSurchargeEnabled { get; set; }
+        public decimal TransferSurchargePercent { get; set; }
+
+        public bool MercadoPagoSurchargeEnabled { get; set; }
+        public decimal MercadoPagoSurchargePercent { get; set; }
+
+        public bool TransferEnabled { get; set; }
     }
 
     public class CreateCompanyDto
@@ -56,6 +64,14 @@
         public bool EnableGuestCount { get; set; }
         public bool EnableAdultsChildrenSplit { get; set; }
         public bool RequireAdultsChildrenSplit { get; set; }
+
+        public bool TransferSurchargeEnabled { get; set; }
+        public decimal TransferSurchargePercent { get; set; }
+
+        public bool MercadoPagoSurchargeEnabled { get; set; }
+        public decimal MercadoPagoSurchargePercent { get; set; }
+
+        public bool TransferEnabled { get; set; }
     }
 
     public class UpdateCompanyDto
@@ -84,5 +100,13 @@
         public bool? EnableGuestCount { get; set; }
         public bool? EnableAdultsChildrenSplit { get; set; }
         public bool? RequireAdultsChildrenSplit { get; set; }
+
+        public bool? TransferSurchargeEnabled { get; set; }
+        public decimal? TransferSurchargePercent { get; set; }
+
+        public bool? MercadoPagoSurchargeEnabled { get; set; }
+        public decimal? MercadoPagoSurchargePercent { get; set; }
+
+        public bool? TransferEnabled { get; set; }
     }
 }

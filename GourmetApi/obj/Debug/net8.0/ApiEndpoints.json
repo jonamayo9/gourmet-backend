@@ -189,6 +189,27 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "GourmetApi.Controllers.AdminOrdersController",
+    "Method": "CreateManual",
+    "RelativePath": "api/admin/{companySlug}/manual",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "GourmetApi.Dtos.Orders.AdminCreateOrderDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "GourmetApi.Controllers.AdminMenuController",
     "Method": "GetMenuForTables",
     "RelativePath": "api/admin/{companySlug}/menu-for-tables",
@@ -272,6 +293,22 @@
       {
         "Name": "req",
         "Type": "GourmetApi.Dtos.UpdateOrderStatusRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminOrdersController",
+    "Method": "GetPaymentOptions",
+    "RelativePath": "api/admin/{companySlug}/payment-options",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -1056,6 +1093,42 @@
     "ReturnTypes": [
       {
         "Type": "GourmetApi.Dtos.CreateMercadoPagoOrderResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.MercadoPagoPublicController",
+    "Method": "ConfirmPayment",
+    "RelativePath": "api/public/{companySlug}/payments/mercadopago/confirm",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "orderId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "paymentId",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Dtos.ConfirmMercadoPagoPaymentResponse",
         "MediaTypes": [
           "text/plain",
           "application/json",

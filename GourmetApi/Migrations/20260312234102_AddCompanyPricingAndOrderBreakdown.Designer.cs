@@ -3,6 +3,7 @@ using System;
 using GourmetApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GourmetApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260312234102_AddCompanyPricingAndOrderBreakdown")]
+    partial class AddCompanyPricingAndOrderBreakdown
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,9 +138,6 @@ namespace GourmetApi.Migrations
                     b.Property<string>("Alias")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("CashSurchargePercent")
-                        .HasColumnType("numeric");
-
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -171,6 +171,12 @@ namespace GourmetApi.Migrations
                     b.Property<bool>("FeatureTableManagementEnabled")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("GlobalIncreaseEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("GlobalIncreasePercent")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("LogoUrl")
                         .HasColumnType("text");
 
@@ -190,9 +196,6 @@ namespace GourmetApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("QrSurchargePercent")
-                        .HasColumnType("numeric");
-
                     b.Property<bool>("RequireAdultsChildrenSplit")
                         .HasColumnType("boolean");
 
@@ -201,9 +204,6 @@ namespace GourmetApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("TablesEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("TransferEnabled")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("TransferSurchargeEnabled")
@@ -300,6 +300,12 @@ namespace GourmetApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("GlobalIncreaseAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("GlobalIncreasePercent")
+                        .HasColumnType("numeric");
+
                     b.Property<bool>("IsTableOrder")
                         .HasColumnType("boolean");
 
@@ -332,18 +338,8 @@ namespace GourmetApi.Migrations
                     b.Property<decimal>("PaymentSurchargePercent")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("QrPayload")
-                        .HasColumnType("text");
-
-                    b.Property<string>("QrReference")
-                        .HasColumnType("text");
-
                     b.Property<int?>("RestaurantTableId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

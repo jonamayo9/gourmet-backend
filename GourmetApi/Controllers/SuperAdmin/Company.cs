@@ -5,7 +5,6 @@ using GourmetApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace GourmetApi.Controllers.SuperAdmin
 {
@@ -28,7 +27,8 @@ namespace GourmetApi.Controllers.SuperAdmin
         {
             try
             {
-                var list = await _db.Companies.AsNoTracking()
+                var list = await _db.Companies
+                    .AsNoTracking()
                     .OrderByDescending(x => x.CreatedAtUtc)
                     .Select(x => new CompanyDto
                     {
@@ -40,11 +40,18 @@ namespace GourmetApi.Controllers.SuperAdmin
                         LogoUrl = x.LogoUrl,
                         Enabled = x.Enabled,
                         CreatedAtUtc = x.CreatedAtUtc,
+
                         MercadoPagoEnabled = x.MercadoPagoEnabled,
                         MercadoPagoHasToken = !string.IsNullOrWhiteSpace(x.MercadoPagoAccessToken),
                         MercadoPagoMaskedToken = string.IsNullOrWhiteSpace(x.MercadoPagoAccessToken)
                             ? null
                             : MaskToken(x.MercadoPagoAccessToken!),
+
+                        TransferSurchargeEnabled = x.TransferSurchargeEnabled,
+                        TransferSurchargePercent = x.TransferSurchargePercent,
+                        MercadoPagoSurchargeEnabled = x.MercadoPagoSurchargeEnabled,
+                        MercadoPagoSurchargePercent = x.MercadoPagoSurchargePercent,
+
                         FeatureOrdersEnabled = x.FeatureOrdersEnabled,
                         FeatureProductsEnabled = x.FeatureProductsEnabled,
                         FeatureCategoriesEnabled = x.FeatureCategoriesEnabled,
@@ -52,10 +59,12 @@ namespace GourmetApi.Controllers.SuperAdmin
                         FeatureDashboardEnabled = x.FeatureDashboardEnabled,
                         FeatureMenuOnlyEnabled = x.FeatureMenuOnlyEnabled,
                         FeatureTableManagementEnabled = x.FeatureTableManagementEnabled,
+
                         TablesEnabled = x.TablesEnabled,
                         EnableGuestCount = x.EnableGuestCount,
                         EnableAdultsChildrenSplit = x.EnableAdultsChildrenSplit,
-                        RequireAdultsChildrenSplit = x.RequireAdultsChildrenSplit
+                        RequireAdultsChildrenSplit = x.RequireAdultsChildrenSplit,
+                        TransferEnabled = x.TransferEnabled
                     })
                     .ToListAsync();
 
@@ -71,7 +80,10 @@ namespace GourmetApi.Controllers.SuperAdmin
         public async Task<ActionResult<CompanyDto>> GetById(int id)
         {
             var x = await _db.Companies.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
-            if (x == null) return NotFound();
+            if (x == null)
+            {
+                return NotFound();
+            }
 
             return Ok(new CompanyDto
             {
@@ -83,11 +95,18 @@ namespace GourmetApi.Controllers.SuperAdmin
                 LogoUrl = x.LogoUrl,
                 Enabled = x.Enabled,
                 CreatedAtUtc = x.CreatedAtUtc,
+
                 MercadoPagoEnabled = x.MercadoPagoEnabled,
                 MercadoPagoHasToken = !string.IsNullOrWhiteSpace(x.MercadoPagoAccessToken),
                 MercadoPagoMaskedToken = string.IsNullOrWhiteSpace(x.MercadoPagoAccessToken)
                     ? null
                     : MaskToken(x.MercadoPagoAccessToken!),
+
+                TransferSurchargeEnabled = x.TransferSurchargeEnabled,
+                TransferSurchargePercent = x.TransferSurchargePercent,
+                MercadoPagoSurchargeEnabled = x.MercadoPagoSurchargeEnabled,
+                MercadoPagoSurchargePercent = x.MercadoPagoSurchargePercent,
+
                 FeatureOrdersEnabled = x.FeatureOrdersEnabled,
                 FeatureProductsEnabled = x.FeatureProductsEnabled,
                 FeatureCategoriesEnabled = x.FeatureCategoriesEnabled,
@@ -95,11 +114,12 @@ namespace GourmetApi.Controllers.SuperAdmin
                 FeatureDashboardEnabled = x.FeatureDashboardEnabled,
                 FeatureMenuOnlyEnabled = x.FeatureMenuOnlyEnabled,
                 FeatureTableManagementEnabled = x.FeatureTableManagementEnabled,
+
                 TablesEnabled = x.TablesEnabled,
                 EnableGuestCount = x.EnableGuestCount,
                 EnableAdultsChildrenSplit = x.EnableAdultsChildrenSplit,
-                RequireAdultsChildrenSplit = x.RequireAdultsChildrenSplit
-
+                RequireAdultsChildrenSplit = x.RequireAdultsChildrenSplit,
+                TransferEnabled = x.TransferEnabled
             });
         }
 
@@ -109,25 +129,50 @@ namespace GourmetApi.Controllers.SuperAdmin
             var slug = (dto.Slug ?? "").Trim().ToLowerInvariant();
             var name = (dto.Name ?? "").Trim();
 
-            if (string.IsNullOrWhiteSpace(slug)) return BadRequest("Slug requerido.");
-            if (string.IsNullOrWhiteSpace(name)) return BadRequest("Name requerido.");
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                return BadRequest("Slug requerido.");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Name requerido.");
+            }
+
+            if (dto.TransferSurchargePercent < -100m || dto.TransferSurchargePercent > 100m)
+            {
+                return BadRequest("El porcentaje de transferencia debe estar entre -100 y 100.");
+            }
+
+            if (dto.MercadoPagoSurchargePercent < -100m || dto.MercadoPagoSurchargePercent > 100m)
+            {
+                return BadRequest("El porcentaje de Mercado Pago debe estar entre -100 y 100.");
+            }
 
             var exists = await _db.Companies.AnyAsync(x => x.Slug == slug);
-            if (exists) return Conflict("Ya existe una empresa con ese slug.");
+            if (exists)
+            {
+                return Conflict("Ya existe una empresa con ese slug.");
+            }
 
             var c = new Company
             {
                 Slug = slug,
                 Name = name,
-                Whatsapp = dto.Whatsapp,
-                Alias = dto.Alias,
-                LogoUrl = dto.LogoUrl,
+                Whatsapp = string.IsNullOrWhiteSpace(dto.Whatsapp) ? null : dto.Whatsapp.Trim(),
+                Alias = string.IsNullOrWhiteSpace(dto.Alias) ? null : dto.Alias.Trim(),
+                LogoUrl = string.IsNullOrWhiteSpace(dto.LogoUrl) ? null : dto.LogoUrl.Trim(),
                 Enabled = dto.Enabled,
                 CreatedAtUtc = DateTime.UtcNow,
 
-                // NUEVO
                 MercadoPagoEnabled = dto.MercadoPagoEnabled,
                 MercadoPagoAccessToken = NormalizeToken(dto.MercadoPagoAccessToken),
+
+                TransferSurchargeEnabled = dto.TransferSurchargeEnabled,
+                TransferSurchargePercent = dto.TransferSurchargeEnabled ? dto.TransferSurchargePercent : 0m,
+                MercadoPagoSurchargeEnabled = dto.MercadoPagoSurchargeEnabled,
+                MercadoPagoSurchargePercent = dto.MercadoPagoSurchargeEnabled ? dto.MercadoPagoSurchargePercent : 0m,
+
                 FeatureOrdersEnabled = dto.FeatureOrdersEnabled,
                 FeatureProductsEnabled = dto.FeatureProductsEnabled,
                 FeatureCategoriesEnabled = dto.FeatureCategoriesEnabled,
@@ -135,27 +180,26 @@ namespace GourmetApi.Controllers.SuperAdmin
                 FeatureDashboardEnabled = dto.FeatureDashboardEnabled,
                 FeatureMenuOnlyEnabled = dto.FeatureMenuOnlyEnabled,
                 FeatureTableManagementEnabled = dto.FeatureTableManagementEnabled,
-                TablesEnabled = dto.TablesEnabled,
-                EnableGuestCount = dto.EnableGuestCount,
-                EnableAdultsChildrenSplit = dto.EnableAdultsChildrenSplit,
-                RequireAdultsChildrenSplit = dto.RequireAdultsChildrenSplit
+                TransferEnabled = dto.TransferEnabled,
+                TablesEnabled = dto.FeatureTableManagementEnabled ? dto.TablesEnabled : false,
+                EnableGuestCount = dto.FeatureTableManagementEnabled ? dto.EnableGuestCount : false,
+                EnableAdultsChildrenSplit = dto.FeatureTableManagementEnabled ? dto.EnableAdultsChildrenSplit : false,
+                RequireAdultsChildrenSplit = dto.FeatureTableManagementEnabled
+                    ? (dto.EnableAdultsChildrenSplit ? dto.RequireAdultsChildrenSplit : false)
+                    : false
             };
 
-            if (dto.FeatureMenuOnlyEnabled)
+            if (c.FeatureMenuOnlyEnabled)
             {
                 c.FeatureOrdersEnabled = false;
             }
-            else
-            {
-                c.FeatureOrdersEnabled = dto.FeatureOrdersEnabled;
-            }
 
-            if (!dto.FeatureTableManagementEnabled)
+            if (!c.FeatureTableManagementEnabled)
             {
-                dto.TablesEnabled = false;
-                dto.EnableGuestCount = false;
-                dto.EnableAdultsChildrenSplit = false;
-                dto.RequireAdultsChildrenSplit = false;
+                c.TablesEnabled = false;
+                c.EnableGuestCount = false;
+                c.EnableAdultsChildrenSplit = false;
+                c.RequireAdultsChildrenSplit = false;
             }
 
             _db.Companies.Add(c);
@@ -171,22 +215,30 @@ namespace GourmetApi.Controllers.SuperAdmin
                 LogoUrl = c.LogoUrl,
                 Enabled = c.Enabled,
                 CreatedAtUtc = c.CreatedAtUtc,
+
                 MercadoPagoEnabled = c.MercadoPagoEnabled,
                 MercadoPagoHasToken = !string.IsNullOrWhiteSpace(c.MercadoPagoAccessToken),
                 MercadoPagoMaskedToken = string.IsNullOrWhiteSpace(c.MercadoPagoAccessToken)
                     ? null
                     : MaskToken(c.MercadoPagoAccessToken!),
-                FeatureOrdersEnabled = dto.FeatureOrdersEnabled,
-                FeatureProductsEnabled = dto.FeatureProductsEnabled,
-                FeatureCategoriesEnabled = dto.FeatureCategoriesEnabled,
-                FeatureShiftsEnabled = dto.FeatureShiftsEnabled,
-                FeatureDashboardEnabled = dto.FeatureDashboardEnabled,
-                FeatureMenuOnlyEnabled = dto.FeatureMenuOnlyEnabled,
-                FeatureTableManagementEnabled = dto.FeatureTableManagementEnabled,
-                TablesEnabled = dto.TablesEnabled,
-                EnableGuestCount = dto.EnableGuestCount,
-                EnableAdultsChildrenSplit = dto.EnableAdultsChildrenSplit,
-                RequireAdultsChildrenSplit = dto.RequireAdultsChildrenSplit
+
+                TransferSurchargeEnabled = c.TransferSurchargeEnabled,
+                TransferSurchargePercent = c.TransferSurchargePercent,
+                MercadoPagoSurchargeEnabled = c.MercadoPagoSurchargeEnabled,
+                MercadoPagoSurchargePercent = c.MercadoPagoSurchargePercent,
+
+                FeatureOrdersEnabled = c.FeatureOrdersEnabled,
+                FeatureProductsEnabled = c.FeatureProductsEnabled,
+                FeatureCategoriesEnabled = c.FeatureCategoriesEnabled,
+                FeatureShiftsEnabled = c.FeatureShiftsEnabled,
+                FeatureDashboardEnabled = c.FeatureDashboardEnabled,
+                FeatureMenuOnlyEnabled = c.FeatureMenuOnlyEnabled,
+                FeatureTableManagementEnabled = c.FeatureTableManagementEnabled,
+
+                TablesEnabled = c.TablesEnabled,
+                EnableGuestCount = c.EnableGuestCount,
+                EnableAdultsChildrenSplit = c.EnableAdultsChildrenSplit,
+                RequireAdultsChildrenSplit = c.RequireAdultsChildrenSplit
             });
         }
 
@@ -199,7 +251,6 @@ namespace GourmetApi.Controllers.SuperAdmin
                 return NotFound();
             }
 
-            // NAME
             if (dto.Name is not null)
             {
                 var name = dto.Name.Trim();
@@ -212,7 +263,6 @@ namespace GourmetApi.Controllers.SuperAdmin
                 c.Name = name;
             }
 
-            // WHATSAPP
             if (dto.Whatsapp is not null)
             {
                 c.Whatsapp = string.IsNullOrWhiteSpace(dto.Whatsapp)
@@ -220,7 +270,6 @@ namespace GourmetApi.Controllers.SuperAdmin
                     : dto.Whatsapp.Trim();
             }
 
-            // ALIAS
             if (dto.Alias is not null)
             {
                 c.Alias = string.IsNullOrWhiteSpace(dto.Alias)
@@ -228,7 +277,6 @@ namespace GourmetApi.Controllers.SuperAdmin
                     : dto.Alias.Trim();
             }
 
-            // LOGO
             if (dto.ClearLogo)
             {
                 c.LogoUrl = null;
@@ -240,19 +288,16 @@ namespace GourmetApi.Controllers.SuperAdmin
                     : dto.LogoUrl.Trim();
             }
 
-            // ENABLED
             if (dto.Enabled.HasValue)
             {
                 c.Enabled = dto.Enabled.Value;
             }
 
-            // MERCADO PAGO ENABLED
             if (dto.MercadoPagoEnabled.HasValue)
             {
                 c.MercadoPagoEnabled = dto.MercadoPagoEnabled.Value;
             }
 
-            // MERCADO PAGO TOKEN
             if (dto.ClearMercadoPagoAccessToken)
             {
                 c.MercadoPagoAccessToken = null;
@@ -267,7 +312,41 @@ namespace GourmetApi.Controllers.SuperAdmin
                 }
             }
 
-            // FEATURES
+            if (dto.TransferSurchargeEnabled.HasValue)
+            {
+                c.TransferSurchargeEnabled = dto.TransferSurchargeEnabled.Value;
+            }
+
+            if (dto.TransferSurchargePercent.HasValue)
+            {
+                if (dto.TransferSurchargePercent.Value < -100m || dto.TransferSurchargePercent.Value > 100m)
+                {
+                    return BadRequest("El porcentaje de transferencia debe estar entre -100 y 100.");
+                }
+
+                c.TransferSurchargePercent = dto.TransferSurchargePercent.Value;
+            }
+
+            if (dto.MercadoPagoSurchargeEnabled.HasValue)
+            {
+                c.MercadoPagoSurchargeEnabled = dto.MercadoPagoSurchargeEnabled.Value;
+            }
+
+            if (dto.MercadoPagoSurchargePercent.HasValue)
+            {
+                if (dto.MercadoPagoSurchargePercent.Value < -100m || dto.MercadoPagoSurchargePercent.Value > 100m)
+                {
+                    return BadRequest("El porcentaje de Mercado Pago debe estar entre -100 y 100.");
+                }
+
+                c.MercadoPagoSurchargePercent = dto.MercadoPagoSurchargePercent.Value;
+            }
+
+            if (dto.TransferEnabled.HasValue)
+            {
+                c.TransferEnabled = dto.TransferEnabled.Value;
+            }
+
             if (dto.FeatureProductsEnabled.HasValue)
             {
                 c.FeatureProductsEnabled = dto.FeatureProductsEnabled.Value;
@@ -303,13 +382,11 @@ namespace GourmetApi.Controllers.SuperAdmin
                 c.FeatureOrdersEnabled = dto.FeatureOrdersEnabled.Value;
             }
 
-            // SOLO MENU => NO PEDIDOS
             if (c.FeatureMenuOnlyEnabled)
             {
                 c.FeatureOrdersEnabled = false;
             }
 
-            // CONFIG MESAS
             if (!c.FeatureTableManagementEnabled)
             {
                 c.TablesEnabled = false;
@@ -338,6 +415,21 @@ namespace GourmetApi.Controllers.SuperAdmin
                 {
                     c.RequireAdultsChildrenSplit = dto.RequireAdultsChildrenSplit.Value;
                 }
+
+                if (!c.EnableAdultsChildrenSplit)
+                {
+                    c.RequireAdultsChildrenSplit = false;
+                }
+            }
+
+            if (!c.TransferSurchargeEnabled)
+            {
+                c.TransferSurchargePercent = 0m;
+            }
+
+            if (!c.MercadoPagoSurchargeEnabled)
+            {
+                c.MercadoPagoSurchargePercent = 0m;
             }
 
             await _db.SaveChangesAsync();
@@ -354,14 +446,26 @@ namespace GourmetApi.Controllers.SuperAdmin
             {
                 var cloudinary = _serviceProvider.GetService<CloudinaryService>();
                 if (cloudinary == null)
+                {
                     return StatusCode(500, "Cloudinary no configurado");
+                }
 
                 var c = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
-                if (c == null) return NotFound("Company not found");
+                if (c == null)
+                {
+                    return NotFound("Company not found");
+                }
 
                 var file = form.File;
-                if (file == null || file.Length == 0) return BadRequest("Archivo requerido");
-                if (!file.ContentType.StartsWith("image/")) return BadRequest("Debe ser imagen");
+                if (file == null || file.Length == 0)
+                {
+                    return BadRequest("Archivo requerido");
+                }
+
+                if (!file.ContentType.StartsWith("image/"))
+                {
+                    return BadRequest("Debe ser imagen");
+                }
 
                 var folder = $"menuonline/companies/{c.Slug}/logo";
                 var url = await cloudinary.UploadImageAsync(file, folder);
@@ -386,14 +490,18 @@ namespace GourmetApi.Controllers.SuperAdmin
             {
                 var company = await _db.Companies.FirstOrDefaultAsync(x => x.Id == id);
                 if (company == null)
+                {
                     return NotFound();
+                }
 
                 var adminUsers = await _db.AdminUsers
                     .Where(x => x.CompanyId == id)
                     .ToListAsync();
 
                 if (adminUsers.Count > 0)
+                {
                     _db.AdminUsers.RemoveRange(adminUsers);
+                }
 
                 var orders = await _db.Orders
                     .Where(x => x.CompanyId == id)
@@ -412,16 +520,24 @@ namespace GourmetApi.Controllers.SuperAdmin
                     .ToListAsync();
 
                 if (orders.Count > 0)
+                {
                     _db.Orders.RemoveRange(orders);
+                }
 
                 if (items.Count > 0)
+                {
                     _db.Set<MenuItem>().RemoveRange(items);
+                }
 
                 if (categories.Count > 0)
+                {
                     _db.Categories.RemoveRange(categories);
+                }
 
                 if (shifts.Count > 0)
+                {
                     _db.Set<Shift>().RemoveRange(shifts);
+                }
 
                 _db.Companies.Remove(company);
 
@@ -445,8 +561,16 @@ namespace GourmetApi.Controllers.SuperAdmin
 
         private static string MaskToken(string token)
         {
-            if (string.IsNullOrWhiteSpace(token)) return "";
-            if (token.Length <= 8) return "********";
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return "";
+            }
+
+            if (token.Length <= 8)
+            {
+                return "********";
+            }
+
             return token.Substring(0, 8) + "********";
         }
     }

@@ -78,7 +78,7 @@ namespace GourmetApi.Controllers.Admin
                 CompanyId = company.Id,
                 CompanySlug = company.Slug,
                 CompanyName = company.Name,
-
+                LogoUrl = company.LogoUrl ?? string.Empty,
                 FeatureOrdersEnabled = company.FeatureOrdersEnabled,
                 FeatureProductsEnabled = company.FeatureProductsEnabled,
                 FeatureCategoriesEnabled = company.FeatureCategoriesEnabled,

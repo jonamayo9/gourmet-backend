@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "AdygXJvHCIE=",
+  "dgSpecHash": "NsIurvNSBoU=",
   "success": true,
   "projectFilePath": "C:\\Users\\Jonathan Ezequiel\\Desktop\\Jony\\Proyectos\\Menu Online\\gourmet-backend\\GourmetApi\\GourmetApi.csproj",
   "expectedPackageFiles": [
@@ -119,7 +119,11 @@
     "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\system.threading\\4.3.0\\system.threading.4.3.0.nupkg.sha512",
     "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\system.threading.channels\\6.0.0\\system.threading.channels.6.0.0.nupkg.sha512",
     "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
-    "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
+    "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512",
+    "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.25\\microsoft.windowsdesktop.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.25\\microsoft.netcore.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.25\\microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512",
+    "C:\\Users\\Jonathan Ezequiel\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.25\\microsoft.netcore.app.host.win-x64.8.0.25.nupkg.sha512"
   ],
   "logs": []
 }

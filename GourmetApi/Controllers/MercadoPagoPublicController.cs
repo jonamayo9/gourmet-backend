@@ -14,11 +14,16 @@ namespace GourmetApi.Controllers
     {
         private readonly AppDbContext _db;
         private readonly MercadoPagoService _mercadoPagoService;
+        private readonly OrderPricingService _orderPricingService;
 
-        public MercadoPagoPublicController(AppDbContext db, MercadoPagoService mercadoPagoService)
+        public MercadoPagoPublicController(
+            AppDbContext db,
+            MercadoPagoService mercadoPagoService,
+            OrderPricingService orderPricingService)
         {
             _db = db;
             _mercadoPagoService = mercadoPagoService;
+            _orderPricingService = orderPricingService;
         }
 
         [HttpPost]
@@ -27,10 +32,15 @@ namespace GourmetApi.Controllers
             [FromBody] CreateMercadoPagoOrderRequest request)
         {
             var company = await _db.Companies.FirstOrDefaultAsync(x => x.Slug == companySlug);
-            if (company == null) return NotFound("Empresa no encontrada.");
+            if (company == null)
+            {
+                return NotFound("Empresa no encontrada.");
+            }
 
             if (request.Items == null || !request.Items.Any())
+            {
                 return BadRequest("No hay productos.");
+            }
 
             var requestedIds = request.Items.Select(i => i.MenuItemId).ToList();
 
@@ -39,13 +49,17 @@ namespace GourmetApi.Controllers
                 .ToListAsync();
 
             if (!menuItems.Any())
+            {
                 return BadRequest("Productos inválidos.");
+            }
 
-            var total = request.Items.Sum(i =>
+            var subtotalBase = request.Items.Sum(i =>
             {
                 var item = menuItems.First(x => x.Id == i.MenuItemId);
                 return item.Price * i.Qty;
             });
+
+            var pricing = _orderPricingService.Calculate(company, subtotalBase, "MercadoPago");
 
             var order = new Order
             {
@@ -55,7 +69,10 @@ namespace GourmetApi.Controllers
                 PaymentMethod = "MercadoPago",
                 Status = OrderStatus.New,
                 PaymentStatus = PaymentStatus.Pending,
-                Total = total,
+                SubtotalBase = pricing.SubtotalBase,
+                PaymentSurchargePercent = pricing.PaymentSurchargePercent,
+                PaymentSurchargeAmount = pricing.PaymentSurchargeAmount,
+                Total = pricing.Total,
                 CreatedAt = DateTime.UtcNow,
                 OrderNumber = Guid.NewGuid().ToString("N")[..8].ToUpper()
             };
@@ -63,6 +80,7 @@ namespace GourmetApi.Controllers
             foreach (var reqItem in request.Items)
             {
                 var menuItem = menuItems.First(x => x.Id == reqItem.MenuItemId);
+                var lineTotal = menuItem.Price * reqItem.Qty;
 
                 order.Items.Add(new OrderItem
                 {
@@ -70,6 +88,7 @@ namespace GourmetApi.Controllers
                     Name = menuItem.Name,
                     UnitPrice = menuItem.Price,
                     Qty = reqItem.Qty,
+                    LineTotal = lineTotal,
                     Note = reqItem.Note
                 });
             }
@@ -98,16 +117,24 @@ namespace GourmetApi.Controllers
             int orderId)
         {
             var company = await _db.Companies.FirstOrDefaultAsync(x => x.Slug == companySlug);
-            if (company == null) return NotFound("Empresa no encontrada.");
+            if (company == null)
+            {
+                return NotFound("Empresa no encontrada.");
+            }
 
             var order = await _db.Orders
                 .Include(x => x.Items)
                 .FirstOrDefaultAsync(x => x.Id == orderId && x.CompanyId == company.Id);
 
-            if (order == null) return NotFound("Pedido no encontrado.");
+            if (order == null)
+            {
+                return NotFound("Pedido no encontrado.");
+            }
 
             if (order.PaymentMethod != "MercadoPago")
+            {
                 return BadRequest("El pedido no corresponde a Mercado Pago.");
+            }
 
             if (order.PaymentStatus != PaymentStatus.Pending &&
                 order.PaymentStatus != PaymentStatus.Rejected)
@@ -116,7 +143,9 @@ namespace GourmetApi.Controllers
             }
 
             if (order.Status == OrderStatus.Canceled || order.Status == OrderStatus.Delivered)
+            {
                 return BadRequest("El pedido no se puede volver a pagar.");
+            }
 
             var preference = await _mercadoPagoService.CreatePreferenceAsync(order, company, companySlug);
 
@@ -138,31 +167,35 @@ namespace GourmetApi.Controllers
 
         [HttpGet("confirm")]
         public async Task<ActionResult<ConfirmMercadoPagoPaymentResponse>> ConfirmPayment(
-    string companySlug,
-    [FromQuery] int orderId,
-    [FromQuery] string? paymentId)
+            string companySlug,
+            [FromQuery] int orderId,
+            [FromQuery] string? paymentId)
         {
             var company = await _db.Companies.FirstOrDefaultAsync(x => x.Slug == companySlug);
             if (company == null)
+            {
                 return NotFound(new ConfirmMercadoPagoPaymentResponse
                 {
                     Ok = false,
                     Approved = false,
                     Message = "Empresa no encontrada."
                 });
+            }
 
             var order = await _db.Orders
                 .FirstOrDefaultAsync(x => x.Id == orderId && x.CompanyId == company.Id);
 
             if (order == null)
+            {
                 return NotFound(new ConfirmMercadoPagoPaymentResponse
                 {
                     Ok = false,
                     Approved = false,
                     Message = "Pedido no encontrado."
                 });
+            }
 
-            var storePhone = company.Whatsapp; // o el campo que vos tengas
+            var storePhone = company.Whatsapp;
             string? whatsappUrl = null;
 
             if (!string.IsNullOrWhiteSpace(storePhone))

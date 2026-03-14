@@ -484,6 +484,69 @@
         }
       }
     },
+    "/api/admin/{companySlug}/manual": {
+      "post": {
+        "tags": [
+          "AdminOrders"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateOrderDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateOrderDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/payment-options": {
+      "get": {
+        "tags": [
+          "AdminOrders"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/admin/{companySlug}/shifts": {
       "get": {
         "tags": [
@@ -2153,6 +2216,60 @@
         }
       }
     },
+    "/api/public/{companySlug}/payments/mercadopago/confirm": {
+      "get": {
+        "tags": [
+          "MercadoPagoPublic"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderId",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "paymentId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmMercadoPagoPaymentResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmMercadoPagoPaymentResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmMercadoPagoPaymentResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/payments/mercadopago/webhook": {
       "post": {
         "tags": [
@@ -2410,10 +2527,68 @@
         },
         "additionalProperties": false
       },
+      "AdminCreateOrderDto": {
+        "type": "object",
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "orderType": {
+            "type": "string",
+            "nullable": true
+          },
+          "paymentMethod": {
+            "$ref": "#/components/schemas/PaymentMethod"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminCreateOrderItemDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AdminCreateOrderItemDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "AdminMeDto": {
         "type": "object",
         "properties": {
           "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
             "type": "string",
             "nullable": true
           },
@@ -2630,6 +2805,55 @@
           },
           "requireAdultsChildrenSplit": {
             "type": "boolean"
+          },
+          "transferSurchargeEnabled": {
+            "type": "boolean"
+          },
+          "transferSurchargePercent": {
+            "type": "number",
+            "format": "double"
+          },
+          "mercadoPagoSurchargeEnabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoSurchargePercent": {
+            "type": "number",
+            "format": "double"
+          },
+          "transferEnabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ConfirmMercadoPagoPaymentResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "approved": {
+            "type": "boolean"
+          },
+          "orderId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "whatsappUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "storePhone": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2761,6 +2985,23 @@
             "type": "boolean"
           },
           "requireAdultsChildrenSplit": {
+            "type": "boolean"
+          },
+          "transferSurchargeEnabled": {
+            "type": "boolean"
+          },
+          "transferSurchargePercent": {
+            "type": "number",
+            "format": "double"
+          },
+          "mercadoPagoSurchargeEnabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoSurchargePercent": {
+            "type": "number",
+            "format": "double"
+          },
+          "transferEnabled": {
             "type": "boolean"
           }
         },
@@ -2986,6 +3227,17 @@
           }
         },
         "additionalProperties": false
+      },
+      "PaymentMethod": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "SetEnabledDto": {
         "type": "object",
@@ -3432,48 +3684,89 @@
             "type": "string",
             "nullable": true
           },
-          "enabled": {
+          "clearLogo": {
             "type": "boolean"
           },
+          "enabled": {
+            "type": "boolean",
+            "nullable": true
+          },
           "mercadoPagoEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "mercadoPagoAccessToken": {
             "type": "string",
             "nullable": true
           },
-          "featureOrdersEnabled": {
+          "clearMercadoPagoAccessToken": {
             "type": "boolean"
+          },
+          "featureOrdersEnabled": {
+            "type": "boolean",
+            "nullable": true
           },
           "featureProductsEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "featureCategoriesEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "featureShiftsEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "featureDashboardEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "featureMenuOnlyEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "featureTableManagementEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "tablesEnabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "enableGuestCount": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "enableAdultsChildrenSplit": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
           },
           "requireAdultsChildrenSplit": {
-            "type": "boolean"
+            "type": "boolean",
+            "nullable": true
+          },
+          "transferSurchargeEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "transferSurchargePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "mercadoPagoSurchargeEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "mercadoPagoSurchargePercent": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "transferEnabled": {
+            "type": "boolean",
+            "nullable": true
           }
         },
         "additionalProperties": false

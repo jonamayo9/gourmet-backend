@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GourmetApi.Data;
-using GourmetApi.Models;
+﻿using GourmetApi.Data;
 using GourmetApi.Entities;
+using GourmetApi.Models;
+using GourmetApi.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OrderEntity = GourmetApi.Entities.Order;
 
 namespace GourmetApi.Controllers;
@@ -12,10 +13,12 @@ namespace GourmetApi.Controllers;
 public class PublicController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly OrderPricingService _orderPricingService;
 
-    public PublicController(AppDbContext db)
+    public PublicController(AppDbContext db, OrderPricingService orderPricingService)
     {
         _db = db;
+        _orderPricingService = orderPricingService;
     }
 
     [HttpGet("{companySlug}/menu")]
@@ -88,7 +91,13 @@ public class PublicController : ControllerBase
                 mercadoPagoEnabled = company.MercadoPagoEnabled,
                 whatsappEnabled = !string.IsNullOrWhiteSpace(company.Whatsapp),
                 shiftsEnabled = company.FeatureShiftsEnabled,
-                aliasEnabled = !string.IsNullOrWhiteSpace(company.Alias)
+                aliasEnabled = !string.IsNullOrWhiteSpace(company.Alias),
+
+                transferSurchargeEnabled = company.TransferSurchargeEnabled,
+                transferSurchargePercent = company.TransferSurchargePercent,
+                mercadoPagoSurchargeEnabled = company.MercadoPagoSurchargeEnabled,
+                mercadoPagoSurchargePercent = company.MercadoPagoSurchargePercent,
+                transferEnabled = company.TransferEnabled
             },
             categorias = categories,
             menu = menu
@@ -154,14 +163,14 @@ public class PublicController : ControllerBase
             CreatedAt = DateTime.UtcNow
         };
 
-        decimal total = 0;
+        decimal subtotalBase = 0;
 
         foreach (var it in req.Items)
         {
             var p = products.First(x => x.Id == it.MenuItemId);
 
             var lineTotal = p.Price * it.Qty;
-            total += lineTotal;
+            subtotalBase += lineTotal;
 
             order.Items.Add(new OrderItem
             {
@@ -174,7 +183,12 @@ public class PublicController : ControllerBase
             });
         }
 
-        order.Total = total;
+        var pricing = _orderPricingService.Calculate(company, subtotalBase, req.PaymentMethod);
+
+        order.SubtotalBase = pricing.SubtotalBase;
+        order.PaymentSurchargePercent = pricing.PaymentSurchargePercent;
+        order.PaymentSurchargeAmount = pricing.PaymentSurchargeAmount;
+        order.Total = pricing.Total;
 
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();

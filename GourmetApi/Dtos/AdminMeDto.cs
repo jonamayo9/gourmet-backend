@@ -3,6 +3,7 @@
     public class AdminMeDto
     {
         public string Email { get; set; } = "";
+        public string LogoUrl { get; set; }
         public int? CompanyId { get; set; }
         public string? CompanySlug { get; set; }
         public string? CompanyName { get; set; }

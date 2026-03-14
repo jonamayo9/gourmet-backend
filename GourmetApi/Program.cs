@@ -95,6 +95,7 @@ builder.Services.Configure<MercadoPagoOptions>(
     builder.Configuration.GetSection("MercadoPago"));
 
 builder.Services.AddScoped<MercadoPagoService>();
+builder.Services.AddScoped<OrderPricingService>();
 
 var app = builder.Build();
 
@@ -108,6 +109,8 @@ using (var scope = app.Services.CreateScope())
     var cfg = scope.ServiceProvider.GetRequiredService<IConfiguration>();
     await DbSeeder.SeedAsync(db, cfg);
 }
+
+
 
 app.UseSwagger();
 app.UseSwaggerUI();
