@@ -7,4 +7,5 @@ public class MercadoPagoOptions
     public string FailureUrl { get; set; } = "";
     public string PendingUrl { get; set; } = "";
     public string WebhookUrl { get; set; } = "";
+    public string FrontendBaseUrl { get; set; } = string.Empty;
 }
