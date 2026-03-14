@@ -32,9 +32,22 @@
             if (string.IsNullOrWhiteSpace(company.MercadoPagoAccessToken))
                 throw new Exception("La empresa no tiene configurado el Access Token de Mercado Pago.");
 
+            if (string.IsNullOrWhiteSpace(_options.FrontendBaseUrl))
+                throw new Exception("No está configurada la URL base del frontend.");
+
+            if (string.IsNullOrWhiteSpace(_options.WebhookUrl))
+                throw new Exception("No está configurada la URL del webhook.");
+
             MercadoPagoConfig.AccessToken = company.MercadoPagoAccessToken;
 
             var client = new PreferenceClient();
+
+            var baseFrontUrl = _options.FrontendBaseUrl.TrimEnd('/');
+            var encodedCompanySlug = Uri.EscapeDataString(companySlug);
+
+            var successUrl = $"{baseFrontUrl}/payment/pago-exito.html?company={encodedCompanySlug}";
+            var failureUrl = $"{baseFrontUrl}/payment/pago-error.html?company={encodedCompanySlug}";
+            var pendingUrl = $"{baseFrontUrl}/payment/pago-pendiente.html?company={encodedCompanySlug}";
 
             var request = new PreferenceRequest
             {
@@ -50,12 +63,12 @@
                 },
                 BackUrls = new PreferenceBackUrlsRequest
                 {
-                    Success = _options.SuccessUrl,
-                    Failure = _options.FailureUrl,
-                    Pending = _options.PendingUrl
+                    Success = successUrl,
+                    Failure = failureUrl,
+                    Pending = pendingUrl
                 },
                 AutoReturn = "approved",
-                NotificationUrl = $"{_options.WebhookUrl}?companySlug={companySlug}",
+                NotificationUrl = $"{_options.WebhookUrl}?companySlug={encodedCompanySlug}",
                 ExternalReference = order.Id.ToString(),
                 StatementDescriptor = company.Name.Length > 13
                     ? company.Name.Substring(0, 13)
