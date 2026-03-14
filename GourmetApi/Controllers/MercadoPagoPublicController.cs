@@ -1,4 +1,5 @@
-﻿using global::GourmetApi.Data;
+﻿using System.Text.Json;
+using global::GourmetApi.Data;
 using global::GourmetApi.Dtos;
 using global::GourmetApi.Services;
 using GourmetApi.Entities;
@@ -53,6 +54,11 @@ namespace GourmetApi.Controllers
                 return BadRequest("Productos inválidos.");
             }
 
+            if (menuItems.Count != requestedIds.Distinct().Count())
+            {
+                return BadRequest("Hay productos inválidos o deshabilitados.");
+            }
+
             var subtotalBase = request.Items.Sum(i =>
             {
                 var item = menuItems.First(x => x.Id == i.MenuItemId);
@@ -61,106 +67,34 @@ namespace GourmetApi.Controllers
 
             var pricing = _orderPricingService.Calculate(company, subtotalBase, "MercadoPago");
 
-            var order = new Order
+            var payloadJson = JsonSerializer.Serialize(request);
+
+            var checkout = new MercadoPagoCheckout
             {
                 CompanyId = company.Id,
                 CustomerName = request.CustomerName,
                 Address = request.Address,
-                PaymentMethod = "MercadoPago",
-                Status = OrderStatus.New,
-                PaymentStatus = PaymentStatus.Pending,
                 SubtotalBase = pricing.SubtotalBase,
                 PaymentSurchargePercent = pricing.PaymentSurchargePercent,
                 PaymentSurchargeAmount = pricing.PaymentSurchargeAmount,
                 Total = pricing.Total,
-                CreatedAt = DateTime.UtcNow,
-                OrderNumber = Guid.NewGuid().ToString("N")[..8].ToUpper()
+                PayloadJson = payloadJson,
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow
             };
 
-            foreach (var reqItem in request.Items)
-            {
-                var menuItem = menuItems.First(x => x.Id == reqItem.MenuItemId);
-                var lineTotal = menuItem.Price * reqItem.Qty;
-
-                order.Items.Add(new OrderItem
-                {
-                    MenuItemId = menuItem.Id,
-                    Name = menuItem.Name,
-                    UnitPrice = menuItem.Price,
-                    Qty = reqItem.Qty,
-                    LineTotal = lineTotal,
-                    Note = reqItem.Note
-                });
-            }
-
-            _db.Orders.Add(order);
+            _db.MercadoPagoCheckouts.Add(checkout);
             await _db.SaveChangesAsync();
 
-            var preference = await _mercadoPagoService.CreatePreferenceAsync(order, company, companySlug);
+            var preference = await _mercadoPagoService.CreatePreferenceAsync(checkout, company, companySlug);
 
-            order.PaymentProvider = "MercadoPago";
-            order.PaymentReference = preference.Id;
-
+            checkout.PreferenceId = preference.Id;
             await _db.SaveChangesAsync();
 
             return Ok(new CreateMercadoPagoOrderResponse
             {
-                OrderId = order.Id,
-                OrderNumber = order.OrderNumber,
-                InitPoint = preference.InitPoint
-            });
-        }
-
-        [HttpPost("retry/{orderId:int}")]
-        public async Task<ActionResult<CreateMercadoPagoOrderResponse>> RetryPayment(
-            string companySlug,
-            int orderId)
-        {
-            var company = await _db.Companies.FirstOrDefaultAsync(x => x.Slug == companySlug);
-            if (company == null)
-            {
-                return NotFound("Empresa no encontrada.");
-            }
-
-            var order = await _db.Orders
-                .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == orderId && x.CompanyId == company.Id);
-
-            if (order == null)
-            {
-                return NotFound("Pedido no encontrado.");
-            }
-
-            if (order.PaymentMethod != "MercadoPago")
-            {
-                return BadRequest("El pedido no corresponde a Mercado Pago.");
-            }
-
-            if (order.PaymentStatus != PaymentStatus.Pending &&
-                order.PaymentStatus != PaymentStatus.Rejected)
-            {
-                return BadRequest("El pedido no está disponible para reintentar pago.");
-            }
-
-            if (order.Status == OrderStatus.Canceled || order.Status == OrderStatus.Delivered)
-            {
-                return BadRequest("El pedido no se puede volver a pagar.");
-            }
-
-            var preference = await _mercadoPagoService.CreatePreferenceAsync(order, company, companySlug);
-
-            order.PaymentProvider = "MercadoPago";
-            order.PaymentReference = preference.Id;
-            order.PaymentStatus = PaymentStatus.Pending;
-            order.LastPaymentId = null;
-            order.PaidAt = null;
-
-            await _db.SaveChangesAsync();
-
-            return Ok(new CreateMercadoPagoOrderResponse
-            {
-                OrderId = order.Id,
-                OrderNumber = order.OrderNumber,
+                OrderId = 0,
+                OrderNumber = "",
                 InitPoint = preference.InitPoint
             });
         }
@@ -168,7 +102,7 @@ namespace GourmetApi.Controllers
         [HttpGet("confirm")]
         public async Task<ActionResult<ConfirmMercadoPagoPaymentResponse>> ConfirmPayment(
             string companySlug,
-            [FromQuery] int orderId,
+            [FromQuery] int checkoutId,
             [FromQuery] string? paymentId)
         {
             var company = await _db.Companies.FirstOrDefaultAsync(x => x.Slug == companySlug);
@@ -182,16 +116,16 @@ namespace GourmetApi.Controllers
                 });
             }
 
-            var order = await _db.Orders
-                .FirstOrDefaultAsync(x => x.Id == orderId && x.CompanyId == company.Id);
+            var checkout = await _db.MercadoPagoCheckouts
+                .FirstOrDefaultAsync(x => x.Id == checkoutId && x.CompanyId == company.Id);
 
-            if (order == null)
+            if (checkout == null)
             {
                 return NotFound(new ConfirmMercadoPagoPaymentResponse
                 {
                     Ok = false,
                     Approved = false,
-                    Message = "Pedido no encontrado."
+                    Message = "Checkout no encontrado."
                 });
             }
 
@@ -200,35 +134,35 @@ namespace GourmetApi.Controllers
 
             if (!string.IsNullOrWhiteSpace(storePhone))
             {
-                var text = $"Hola! Ya realicé el pago de mi pedido {order.OrderNumber}.";
+                var orderNumberText = checkout.OrderId.HasValue ? $" de mi pedido #{checkout.OrderId}" : "";
+                var text = $"Hola! Ya realicé el pago{orderNumberText}.";
                 whatsappUrl = $"https://wa.me/{storePhone}?text={Uri.EscapeDataString(text)}";
             }
 
-            if (order.PaymentStatus == PaymentStatus.Approved)
+            if (string.Equals(checkout.Status, "Approved", StringComparison.OrdinalIgnoreCase) && checkout.OrderId.HasValue)
             {
-                if (!string.IsNullOrWhiteSpace(paymentId) &&
-                    !string.IsNullOrWhiteSpace(order.LastPaymentId) &&
-                    order.LastPaymentId != paymentId)
-                {
-                    return BadRequest(new ConfirmMercadoPagoPaymentResponse
-                    {
-                        Ok = false,
-                        Approved = false,
-                        OrderId = order.Id,
-                        OrderNumber = order.OrderNumber,
-                        Message = "El pago informado no coincide con el pedido."
-                    });
-                }
+                var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == checkout.OrderId.Value);
 
                 return Ok(new ConfirmMercadoPagoPaymentResponse
                 {
                     Ok = true,
                     Approved = true,
-                    OrderId = order.Id,
-                    OrderNumber = order.OrderNumber,
+                    OrderId = order?.Id ?? 0,
+                    OrderNumber = order?.OrderNumber ?? "",
                     Message = "Tu pago fue aprobado y tu pedido fue enviado al local.",
                     StorePhone = storePhone,
                     WhatsappUrl = whatsappUrl
+                });
+            }
+
+            if (string.Equals(checkout.Status, "Rejected", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(checkout.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+            {
+                return Ok(new ConfirmMercadoPagoPaymentResponse
+                {
+                    Ok = true,
+                    Approved = false,
+                    Message = "El pago no fue aprobado. No se generó ningún pedido."
                 });
             }
 
@@ -236,8 +170,6 @@ namespace GourmetApi.Controllers
             {
                 Ok = true,
                 Approved = false,
-                OrderId = order.Id,
-                OrderNumber = order.OrderNumber,
                 Message = "Todavía estamos confirmando tu pago. Si ya pagaste, aguardá unos segundos y volvé a intentar."
             });
         }

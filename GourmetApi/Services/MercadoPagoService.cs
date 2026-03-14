@@ -19,7 +19,7 @@
         }
 
         public async Task<Preference> CreatePreferenceAsync(
-            Order order,
+            MercadoPagoCheckout checkout,
             Company company,
             string companySlug)
         {
@@ -55,10 +55,10 @@
                 {
                     new PreferenceItemRequest
                     {
-                        Title = $"Pedido {company.Name} #{order.OrderNumber}",
+                        Title = $"Pedido {company.Name}",
                         Quantity = 1,
                         CurrencyId = "ARS",
-                        UnitPrice = Convert.ToDecimal(order.Total)
+                        UnitPrice = Convert.ToDecimal(checkout.Total)
                     }
                 },
                 BackUrls = new PreferenceBackUrlsRequest
@@ -69,7 +69,7 @@
                 },
                 AutoReturn = "approved",
                 NotificationUrl = $"{_options.WebhookUrl}?companySlug={encodedCompanySlug}",
-                ExternalReference = order.Id.ToString(),
+                ExternalReference = checkout.Id.ToString(),
                 StatementDescriptor = company.Name.Length > 13
                     ? company.Name.Substring(0, 13)
                     : company.Name

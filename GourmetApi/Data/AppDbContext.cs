@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<TableSession> TableSessions { get; set; }
     public DbSet<TableSessionItem> TableSessionItems { get; set; }
 
+    public DbSet<MercadoPagoCheckout> MercadoPagoCheckouts { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

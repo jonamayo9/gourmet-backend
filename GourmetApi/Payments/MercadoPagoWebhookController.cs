@@ -1,4 +1,6 @@
-﻿using GourmetApi.Data;
+﻿using System.Text.Json;
+using GourmetApi.Data;
+using GourmetApi.Dtos;
 using GourmetApi.Entities;
 using GourmetApi.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -53,43 +55,106 @@ namespace GourmetApi.Controllers
             if (string.IsNullOrWhiteSpace(externalReference))
                 return Ok();
 
-            if (!int.TryParse(externalReference, out var orderId))
+            if (!int.TryParse(externalReference, out var checkoutId))
                 return Ok();
 
-            var order = await _db.Orders.FirstOrDefaultAsync(x => x.Id == orderId && x.CompanyId == company.Id);
-            if (order == null)
+            var checkout = await _db.MercadoPagoCheckouts
+                .FirstOrDefaultAsync(x => x.Id == checkoutId && x.CompanyId == company.Id);
+
+            if (checkout == null)
                 return Ok();
 
-            order.PaymentProvider = "MercadoPago";
-            order.LastPaymentId = payment.Id.ToString();
+            checkout.PaymentId = payment.Id.ToString();
 
             var mpStatus = (payment.Status ?? "").Trim().ToLowerInvariant();
 
             switch (mpStatus)
             {
                 case "approved":
-                    order.PaymentStatus = PaymentStatus.Approved;
+                    checkout.Status = "Approved";
 
-                    if (order.PaidAt == null)
-                        order.PaidAt = DateTime.UtcNow;
+                    if (checkout.OrderId == null)
+                    {
+                        var request = JsonSerializer.Deserialize<CreateMercadoPagoOrderRequest>(checkout.PayloadJson);
 
-                    if (order.Status == OrderStatus.New)
-                        order.Status = OrderStatus.Preparing;
+                        if (request == null || request.Items == null || !request.Items.Any())
+                        {
+                            await _db.SaveChangesAsync();
+                            return Ok();
+                        }
+
+                        var requestedIds = request.Items.Select(i => i.MenuItemId).ToList();
+
+                        var menuItems = await _db.MenuItems
+                            .Where(x => x.CompanyId == company.Id && requestedIds.Contains(x.Id) && x.Enabled)
+                            .ToListAsync();
+
+                        if (!menuItems.Any())
+                        {
+                            await _db.SaveChangesAsync();
+                            return Ok();
+                        }
+
+                        var order = new Order
+                        {
+                            CompanyId = company.Id,
+                            CustomerName = checkout.CustomerName,
+                            Address = checkout.Address,
+                            PaymentMethod = "MercadoPago",
+                            Status = OrderStatus.Preparing,
+                            PaymentStatus = PaymentStatus.Approved,
+                            SubtotalBase = checkout.SubtotalBase,
+                            PaymentSurchargePercent = checkout.PaymentSurchargePercent,
+                            PaymentSurchargeAmount = checkout.PaymentSurchargeAmount,
+                            Total = checkout.Total,
+                            CreatedAt = DateTime.UtcNow,
+                            OrderNumber = Guid.NewGuid().ToString("N")[..8].ToUpper(),
+                            PaymentProvider = "MercadoPago",
+                            PaymentReference = checkout.PreferenceId,
+                            PaidAt = DateTime.UtcNow,
+                            LastPaymentId = payment.Id.ToString(),
+                            Source = "Public"
+                        };
+
+                        foreach (var reqItem in request.Items)
+                        {
+                            var menuItem = menuItems.FirstOrDefault(x => x.Id == reqItem.MenuItemId);
+                            if (menuItem == null)
+                                continue;
+
+                            var lineTotal = menuItem.Price * reqItem.Qty;
+
+                            order.Items.Add(new OrderItem
+                            {
+                                MenuItemId = menuItem.Id,
+                                Name = menuItem.Name,
+                                UnitPrice = menuItem.Price,
+                                Qty = reqItem.Qty,
+                                LineTotal = lineTotal,
+                                Note = reqItem.Note
+                            });
+                        }
+
+                        _db.Orders.Add(order);
+                        await _db.SaveChangesAsync();
+
+                        checkout.OrderId = order.Id;
+                    }
 
                     break;
 
                 case "rejected":
-                    order.PaymentStatus = PaymentStatus.Rejected;
+                    checkout.Status = "Rejected";
                     break;
 
                 case "cancelled":
                 case "cancelled_by_user":
-                    order.PaymentStatus = PaymentStatus.Cancelled;
+                    checkout.Status = "Cancelled";
                     break;
 
                 case "pending":
                 case "in_process":
-                    order.PaymentStatus = PaymentStatus.Pending;
+                    checkout.Status = "Pending";
                     break;
             }
 
@@ -99,23 +164,20 @@ namespace GourmetApi.Controllers
         }
 
         [Authorize]
-        [HttpPost("orders/{orderId:int}/sync-payment")]
-        public async Task<IActionResult> SyncPayment(int orderId)
+        [HttpPost("checkout/{checkoutId:int}/sync-payment")]
+        public async Task<IActionResult> SyncPayment(int checkoutId)
         {
-            var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == orderId);
-            if (order == null) return NotFound("Order not found");
+            var checkout = await _db.MercadoPagoCheckouts.FirstOrDefaultAsync(o => o.Id == checkoutId);
+            if (checkout == null) return NotFound("Checkout not found");
 
-            var company = await _db.Companies.FirstOrDefaultAsync(c => c.Id == order.CompanyId);
+            var company = await _db.Companies.FirstOrDefaultAsync(c => c.Id == checkout.CompanyId);
             if (company == null) return NotFound("Company not found");
 
-            if (order.PaymentMethod != "MercadoPago")
-                return BadRequest("El pedido no corresponde a Mercado Pago.");
+            if (string.IsNullOrWhiteSpace(checkout.PaymentId))
+                return BadRequest("El checkout no tiene PaymentId para sincronizar.");
 
-            if (string.IsNullOrWhiteSpace(order.LastPaymentId))
-                return BadRequest("El pedido no tiene LastPaymentId para sincronizar.");
-
-            if (!long.TryParse(order.LastPaymentId, out var paymentId))
-                return BadRequest("LastPaymentId inválido.");
+            if (!long.TryParse(checkout.PaymentId, out var paymentId))
+                return BadRequest("PaymentId inválido.");
 
             var payment = await _mercadoPagoService.GetPaymentAsync(paymentId, company);
             if (payment == null)
@@ -123,34 +185,24 @@ namespace GourmetApi.Controllers
 
             var mpStatus = (payment.Status ?? "").Trim().ToLowerInvariant();
 
-            order.PaymentProvider = "MercadoPago";
-            order.LastPaymentId = payment.Id.ToString();
-
             switch (mpStatus)
             {
                 case "approved":
-                    order.PaymentStatus = PaymentStatus.Approved;
-
-                    if (order.PaidAt == null)
-                        order.PaidAt = DateTime.UtcNow;
-
-                    if (order.Status == OrderStatus.New)
-                        order.Status = OrderStatus.Preparing;
-
+                    checkout.Status = "Approved";
                     break;
 
                 case "rejected":
-                    order.PaymentStatus = PaymentStatus.Rejected;
+                    checkout.Status = "Rejected";
                     break;
 
                 case "cancelled":
                 case "cancelled_by_user":
-                    order.PaymentStatus = PaymentStatus.Cancelled;
+                    checkout.Status = "Cancelled";
                     break;
 
                 case "pending":
                 case "in_process":
-                    order.PaymentStatus = PaymentStatus.Pending;
+                    checkout.Status = "Pending";
                     break;
             }
 
@@ -158,11 +210,10 @@ namespace GourmetApi.Controllers
 
             return Ok(new
             {
-                order.Id,
-                order.OrderNumber,
-                paymentStatus = order.PaymentStatus.ToString(),
-                order.PaidAt,
-                order.LastPaymentId
+                checkout.Id,
+                checkout.Status,
+                checkout.PaymentId,
+                checkout.OrderId
             });
         }
     }
