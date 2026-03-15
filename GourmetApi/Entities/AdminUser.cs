@@ -33,5 +33,6 @@ namespace GourmetApi.Entities
         public bool CanAccessTablesWaiter { get; set; } = false;
         public bool CanAccessTableConfig { get; set; } = false;
         public bool CanAccessTableDashboard { get; set; } = false;
+        public bool CanAccessCompanySettings { get; set; } = false;
     }
 }

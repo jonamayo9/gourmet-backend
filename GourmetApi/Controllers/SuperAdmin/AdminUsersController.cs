@@ -51,6 +51,7 @@ namespace GourmetApi.Controllers.SuperAdmin
                     CanAccessCategories = x.CanAccessCategories,
                     CanAccessShifts = x.CanAccessShifts,
                     CanAccessDashboard = x.CanAccessDashboard,
+                    CanAccessCompanySettings = x.CanAccessCompanySettings,
                     CanAccessTablesWaiter = x.CanAccessTablesWaiter,
                     CanAccessTableConfig = x.CanAccessTableConfig,
                     CanAccessTableDashboard = x.CanAccessTableDashboard
@@ -88,9 +89,10 @@ namespace GourmetApi.Controllers.SuperAdmin
                 CanAccessCategories = company.FeatureCategoriesEnabled && dto.CanAccessCategories,
                 CanAccessShifts = company.FeatureShiftsEnabled && dto.CanAccessShifts,
                 CanAccessDashboard = company.FeatureDashboardEnabled && dto.CanAccessDashboard,
+                CanAccessCompanySettings = dto.CanAccessCompanySettings,
                 CanAccessTablesWaiter = company.FeatureTableManagementEnabled && dto.CanAccessTablesWaiter,
                 CanAccessTableConfig = company.FeatureTableManagementEnabled && dto.CanAccessTableConfig,
-                CanAccessTableDashboard = company.FeatureTableManagementEnabled && dto.CanAccessTableDashboard,
+                CanAccessTableDashboard = company.FeatureTableManagementEnabled && dto.CanAccessTableDashboard
             };
 
             // ✅ usar SIEMPRE PasswordHasher (porque tu Auth usa PasswordHasher)
@@ -159,6 +161,7 @@ namespace GourmetApi.Controllers.SuperAdmin
             u.CanAccessCategories = company.FeatureCategoriesEnabled && dto.CanAccessCategories;
             u.CanAccessShifts = company.FeatureShiftsEnabled && dto.CanAccessShifts;
             u.CanAccessDashboard = company.FeatureDashboardEnabled && dto.CanAccessDashboard;
+            u.CanAccessCompanySettings = dto.CanAccessCompanySettings;
             u.CanAccessTablesWaiter = company.FeatureTableManagementEnabled && dto.CanAccessTablesWaiter;
             u.CanAccessTableConfig = company.FeatureTableManagementEnabled && dto.CanAccessTableConfig;
             u.CanAccessTableDashboard = company.FeatureTableManagementEnabled && dto.CanAccessTableDashboard;
@@ -182,6 +185,7 @@ namespace GourmetApi.Controllers.SuperAdmin
             CanAccessCategories = x.CanAccessCategories,
             CanAccessShifts = x.CanAccessShifts,
             CanAccessDashboard = x.CanAccessDashboard,
+            CanAccessCompanySettings = x.CanAccessCompanySettings,
             CanAccessTablesWaiter = x.CanAccessTablesWaiter,
             CanAccessTableConfig = x.CanAccessTableConfig,
             CanAccessTableDashboard = x.CanAccessTableDashboard

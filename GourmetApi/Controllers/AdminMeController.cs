@@ -61,7 +61,8 @@ namespace GourmetApi.Controllers.Admin
                     CanAccessDashboard = admin.CanAccessDashboard,
                     CanAccessTablesWaiter = admin.CanAccessTablesWaiter,
                     CanAccessTableConfig = admin.CanAccessTableConfig,
-                    CanAccessTableDashboard = admin.CanAccessTableDashboard
+                    CanAccessTableDashboard = admin.CanAccessTableDashboard,
+                    CanAccessCompanySettings = admin.CanAccessCompanySettings
                 });
             }
 
@@ -94,6 +95,7 @@ namespace GourmetApi.Controllers.Admin
                 CanAccessTablesWaiter = admin.CanAccessTablesWaiter,
                 CanAccessTableConfig = admin.CanAccessTableConfig,
                 CanAccessTableDashboard = admin.CanAccessTableDashboard,
+                CanAccessCompanySettings = admin.CanAccessCompanySettings,
                 FeatureTableManagementEnabled = company.FeatureTableManagementEnabled,
             });
         }

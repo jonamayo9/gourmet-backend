@@ -84,6 +84,94 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "GourmetApi.Controllers.AdminCompanySettingsController",
+    "Method": "Get",
+    "RelativePath": "api/admin/{companySlug}/company-settings",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Dtos.CompanySettingsResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminCompanySettingsController",
+    "Method": "Put",
+    "RelativePath": "api/admin/{companySlug}/company-settings",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "GourmetApi.Dtos.UpdateCompanySettingsRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Dtos.CompanySettingsResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "GourmetApi.Controllers.AdminCompanySettingsController",
+    "Method": "UploadLogo",
+    "RelativePath": "api/admin/{companySlug}/company-settings/logo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "companySlug",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "GourmetApi.Dtos.UploadCompanyLogoResponseDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "GourmetApi.Controllers.AdminMenuItemsController",
     "Method": "GetItems",
     "RelativePath": "api/admin/{companySlug}/items",
@@ -1021,13 +1109,13 @@
   {
     "ContainingType": "GourmetApi.Controllers.MercadoPagoWebhookController",
     "Method": "SyncPayment",
-    "RelativePath": "api/payments/mercadopago/webhook/orders/{orderId}/sync-payment",
+    "RelativePath": "api/payments/mercadopago/webhook/checkout/{checkoutId}/sync-payment",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "orderId",
+        "Name": "checkoutId",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -1116,7 +1204,7 @@
         "IsRequired": true
       },
       {
-        "Name": "orderId",
+        "Name": "checkoutId",
         "Type": "System.Int32",
         "IsRequired": false
       },
@@ -1129,37 +1217,6 @@
     "ReturnTypes": [
       {
         "Type": "GourmetApi.Dtos.ConfirmMercadoPagoPaymentResponse",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "GourmetApi.Controllers.MercadoPagoPublicController",
-    "Method": "RetryPayment",
-    "RelativePath": "api/public/{companySlug}/payments/mercadopago/retry/{orderId}",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "companySlug",
-        "Type": "System.String",
-        "IsRequired": true
-      },
-      {
-        "Name": "orderId",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": [
-      {
-        "Type": "GourmetApi.Dtos.CreateMercadoPagoOrderResponse",
         "MediaTypes": [
           "text/plain",
           "application/json",

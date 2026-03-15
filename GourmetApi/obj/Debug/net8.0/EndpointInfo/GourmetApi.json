@@ -145,6 +145,160 @@
         }
       }
     },
+    "/api/admin/{companySlug}/company-settings": {
+      "get": {
+        "tags": [
+          "AdminCompanySettings"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySettingsResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySettingsResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySettingsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "AdminCompanySettings"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanySettingsRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanySettingsRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanySettingsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySettingsResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySettingsResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanySettingsResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/admin/{companySlug}/company-settings/logo": {
+      "post": {
+        "tags": [
+          "AdminCompanySettings"
+        ],
+        "parameters": [
+          {
+            "name": "companySlug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCompanyLogoResponseDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCompanyLogoResponseDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadCompanyLogoResponseDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/admin/me": {
       "get": {
         "tags": [
@@ -2168,54 +2322,6 @@
         }
       }
     },
-    "/api/public/{companySlug}/payments/mercadopago/retry/{orderId}": {
-      "post": {
-        "tags": [
-          "MercadoPagoPublic"
-        ],
-        "parameters": [
-          {
-            "name": "companySlug",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "orderId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateMercadoPagoOrderResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/public/{companySlug}/payments/mercadopago/confirm": {
       "get": {
         "tags": [
@@ -2231,7 +2337,7 @@
             }
           },
           {
-            "name": "orderId",
+            "name": "checkoutId",
             "in": "query",
             "schema": {
               "type": "integer",
@@ -2282,14 +2388,14 @@
         }
       }
     },
-    "/api/payments/mercadopago/webhook/orders/{orderId}/sync-payment": {
+    "/api/payments/mercadopago/webhook/checkout/{checkoutId}/sync-payment": {
       "post": {
         "tags": [
           "MercadoPagoWebhook"
         ],
         "parameters": [
           {
-            "name": "orderId",
+            "name": "checkoutId",
             "in": "path",
             "required": true,
             "schema": {
@@ -2649,6 +2755,9 @@
           },
           "featureTableManagementEnabled": {
             "type": "boolean"
+          },
+          "canAccessCompanySettings": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2707,6 +2816,9 @@
             "type": "boolean"
           },
           "canAccessTableDashboard": {
+            "type": "boolean"
+          },
+          "canAccessCompanySettings": {
             "type": "boolean"
           }
         },
@@ -2820,7 +2932,46 @@
             "type": "number",
             "format": "double"
           },
+          "canAccessCompanySettings": {
+            "type": "boolean"
+          },
           "transferEnabled": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CompanySettingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "whatsapp": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "alias": {
+            "type": "string",
+            "nullable": true
+          },
+          "transferSurchargePercent": {
+            "type": "number",
+            "format": "double"
+          },
+          "mercadoPagoSurchargePercent": {
+            "type": "number",
+            "format": "double"
+          },
+          "transferEnabled": {
+            "type": "boolean"
+          },
+          "mercadoPagoEnabled": {
             "type": "boolean"
           }
         },
@@ -2917,6 +3068,9 @@
           },
           "canAccessTableDashboard": {
             "type": "boolean"
+          },
+          "canAccessCompanySettings": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -3000,6 +3154,9 @@
           "mercadoPagoSurchargePercent": {
             "type": "number",
             "format": "double"
+          },
+          "canAccessCompanySettings": {
+            "type": "boolean"
           },
           "transferEnabled": {
             "type": "boolean"
@@ -3661,6 +3818,9 @@
           },
           "canAccessTableDashboard": {
             "type": "boolean"
+          },
+          "canAccessCompanySettings": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -3764,9 +3924,42 @@
             "format": "double",
             "nullable": true
           },
+          "canAccessCompanySettings": {
+            "type": "boolean"
+          },
           "transferEnabled": {
             "type": "boolean",
             "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateCompanySettingsRequestDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "whatsapp": {
+            "type": "string",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "alias": {
+            "type": "string",
+            "nullable": true
+          },
+          "transferSurchargePercent": {
+            "type": "number",
+            "format": "double"
+          },
+          "mercadoPagoSurchargePercent": {
+            "type": "number",
+            "format": "double"
           }
         },
         "additionalProperties": false
@@ -3776,6 +3969,16 @@
         "properties": {
           "status": {
             "$ref": "#/components/schemas/OrderStatus"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UploadCompanyLogoResponseDto": {
+        "type": "object",
+        "properties": {
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

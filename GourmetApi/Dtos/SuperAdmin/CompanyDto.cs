@@ -36,6 +36,7 @@
         public bool MercadoPagoSurchargeEnabled { get; set; }
         public decimal MercadoPagoSurchargePercent { get; set; }
 
+        public bool CanAccessCompanySettings { get; set; }
         public bool TransferEnabled { get; set; }
     }
 
@@ -71,6 +72,7 @@
         public bool MercadoPagoSurchargeEnabled { get; set; }
         public decimal MercadoPagoSurchargePercent { get; set; }
 
+        public bool CanAccessCompanySettings { get; set; }
         public bool TransferEnabled { get; set; }
     }
 
@@ -107,6 +109,7 @@
         public bool? MercadoPagoSurchargeEnabled { get; set; }
         public decimal? MercadoPagoSurchargePercent { get; set; }
 
+        public bool CanAccessCompanySettings { get; set; }
         public bool? TransferEnabled { get; set; }
     }
 }

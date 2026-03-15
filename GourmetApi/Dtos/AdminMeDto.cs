@@ -25,5 +25,6 @@
         public bool CanAccessTableConfig { get; set; }
         public bool CanAccessTableDashboard { get; set; }
         public bool FeatureTableManagementEnabled { get; set; }
+        public bool CanAccessCompanySettings { get; set; }
     }
 }
